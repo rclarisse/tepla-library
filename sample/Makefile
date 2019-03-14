@@ -8,7 +8,8 @@ INCDIR = -I../include
 CFLAGS  = -Wall -g -O4
 LDFLAGS = -Wall -g
 
-TARGET = sample.exe speed.exe
+#TARGET = sample.exe speed.exe ecdsa.exe sample2.exe
+TARGET = sample2.exe
 
 all: $(TARGET)
 

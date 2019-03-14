@@ -282,7 +282,7 @@ void curve_init(EC_GROUP ec, const char *param)
     }
     else
     {
-        fprintf(stderr, "We donot support the identity : %s\n", param);
+        fprintf(stderr, "We do not support the identity : %s\n", param);
         exit(200);
     }
 
@@ -451,7 +451,7 @@ void pairing_init(EC_PAIRING p, char *param)
     }
     else
     {
-        fprintf(stderr, "We donot suppoert the identity : %s\n", param);
+        fprintf(stderr, "We do not support the identity : %s\n", param);
         exit(200);
     }
 }
