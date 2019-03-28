@@ -14,6 +14,7 @@
 //--for debug
 
 #include "ec_bn254/ec.h"
+#include "ec_bls509/ec.h"
 
 #ifndef TRUE
 #define TRUE 1
@@ -29,6 +30,36 @@
 
 #define Field(x)  (x->field)
 #define Curve(p)  (p->ec->method)
+
+//-----------------------------------------------------
+// utility for set field/curve name
+//-----------------------------------------------------
+void set_field_name(Field f, const char* name)
+{
+    int len = strlen(name) + 1;
+
+    f->field_name = (char*)malloc(sizeof(char) * len);
+
+    strcpy(f->field_name, name);
+}
+
+void set_curve_name(EC_GROUP ec, const char* name)
+{
+    int len = strlen(name) + 1;
+
+    ec->curve_name = (char*)malloc(sizeof(char) * len);
+
+    strcpy(ec->curve_name, name);
+}
+
+void set_pairing_name(EC_PAIRING p, const char* name)
+{
+    int len = strlen(name) + 1;
+
+    p->pairing_name = (char*)malloc(sizeof(char) * len);
+
+    strcpy(p->pairing_name, name);
+}
 
 //============================================
 //  Field : Init, Clear
@@ -77,6 +108,13 @@ void field_init(Field f, const char *param)
     {
         f->field_init  = ec_bn254_fp12b_new;
         f->field_clear = ec_bn254_field_clear;
+    }
+
+    // CLN's parameter
+    else if (strcmp(param, "bls509_fp") == 0)
+    {
+      f->field_init  = ec_bls509_fp_new;
+      f->field_clear  = ec_bls509_field_clear;
     }
 
     else

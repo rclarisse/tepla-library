@@ -27,18 +27,20 @@ LIBTYPE = @LIBTYPE@
 
 TARGET = ec_lib.o hash.o
 
-OBJS  = bn254_fp.o
-OBJS += bn254_fp2.o
-OBJS += bn254_fp6.o
-OBJS += bn254_fp12.o
-OBJS += ec_bn254_fp.o
-OBJS += ec_bn254_fp2.o
-OBJS += ec_bn254_pairing.o
-OBJS += ec_bn254_lib.o
+OBJSBN   = bn254_fp.o
+OBJSBN  += bn254_fp2.o
+OBJSBN  += bn254_fp6.o
+OBJSBN  += bn254_fp12.o
+OBJSBN  += ec_bn254_fp.o
+OBJSBN  += ec_bn254_fp2.o
+OBJSBN  += ec_bn254_pairing.o
+OBJSBN  += ec_bn254_lib.o
+OBJSBLS  = bls509_fp.o
 
 all: $(TARGET)
-	@echo compiling the ec_bn254
+	@echo compiling the ec_bn254 and ec_bls509
 	make -C ec_bn254/
+	make -C ec_bls509/
 ifeq ($(LIBTYPE), static)
 	make static
 else
@@ -52,17 +54,19 @@ endif
 
 static:
 	@echo creating static library.
-	ar $(STATIC) $(ALIBNAME) $(TARGET) $(OBJS:%.o=ec_bn254/%.o)
+	ar $(STATIC) $(ALIBNAME) $(TARGET) $(OBJSBN:%.o=ec_bn254/%.o) $(OBJSBLS:%.o=ec_bls509/%.o)
 
 shared:
 	@echo creating shared library.
-	$(CC) $(SHARED) $(LDFLAGS) -o $(SOLIBNAME) $(TARGET) $(OBJS:%.o=ec_bn254/%.o) $(LIBS)
+	$(CC) $(SHARED) $(LDFLAGS) -o $(SOLIBNAME) $(TARGET) $(OBJSBN:%.o=ec_bn254/%.o) $(OBJSBLS:%.o=ec_bls509/%.o) $(LIBS)
 
 check:
 	@echo test library.
 	make check -C ec_bn254/
+	make check -C ec_bls509/
 
 .PHONY: clean
 clean:
 	$(RM) *~ $(TARGET) $(SOLIBNAME) $(ALIBNAME)
 	make clean -C ec_bn254/
+	make clean -C ec_bls509/

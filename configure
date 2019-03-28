@@ -3813,7 +3813,7 @@ $as_echo "no" >&6; }
 
 fi
 
-ac_config_files="$ac_config_files Makefile src/tepla/Makefile src/tepla/ec_bn254/Makefile src/tepla/ec_bn254/test/Makefile"
+ac_config_files="$ac_config_files Makefile src/tepla/Makefile src/tepla/ec_bn254/Makefile src/tepla/ec_bn254/test/Makefile src/tepla/ec_bls509/Makefile src/tepla/ec_bls509/test/Makefile"
 
 
 cat >confcache <<\_ACEOF
@@ -4510,6 +4510,8 @@ do
     "src/tepla/Makefile") CONFIG_FILES="$CONFIG_FILES src/tepla/Makefile" ;;
     "src/tepla/ec_bn254/Makefile") CONFIG_FILES="$CONFIG_FILES src/tepla/ec_bn254/Makefile" ;;
     "src/tepla/ec_bn254/test/Makefile") CONFIG_FILES="$CONFIG_FILES src/tepla/ec_bn254/test/Makefile" ;;
+    "src/tepla/ec_bls509/Makefile") CONFIG_FILES="$CONFIG_FILES src/tepla/ec_bls509/Makefile" ;;
+    "src/tepla/ec_bls509/test/Makefile") CONFIG_FILES="$CONFIG_FILES src/tepla/ec_bls509/test/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -5090,4 +5092,3 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
-

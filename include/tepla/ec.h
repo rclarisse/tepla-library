@@ -17,6 +17,7 @@ extern "C" {
 typedef enum
 {
     Curve_BN,
+    Curve_BLS,
 
 } ECType;
 
@@ -105,6 +106,7 @@ typedef enum
 {
     Pairing_ECBN254a,
     Pairing_ECBN254b,
+    Pairing_ECBLS509,
 
 } PairingType;
 
@@ -128,6 +130,13 @@ typedef struct ec_pairing_st
     void* precomp;
 
 } EC_PAIRING[1];
+
+//-----------------------------------------------------
+// utility for set field/curve name
+//-----------------------------------------------------
+void set_field_name(Field f, const char* name);
+void set_curve_name(EC_GROUP ec, const char* name);
+void set_pairing_name(EC_PAIRING p, const char* name);
 
 //---------------------------------------------------
 //  functions for Elliptic Curve

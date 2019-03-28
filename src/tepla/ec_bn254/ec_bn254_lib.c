@@ -7,36 +7,6 @@
 
 #define SAFE_FREE(p) { if(p){ free(p); (p)=NULL; } }
 
-//-----------------------------------------------------
-// utility for set field/curve name
-//-----------------------------------------------------
-void set_field_name(Field f, const char* name)
-{
-    int len = strlen(name) + 1;
-
-    f->field_name = (char*)malloc(sizeof(char) * len);
-
-    strcpy(f->field_name, name);
-}
-
-void set_curve_name(EC_GROUP ec, const char* name)
-{
-    int len = strlen(name) + 1;
-
-    ec->curve_name = (char*)malloc(sizeof(char) * len);
-
-    strcpy(ec->curve_name, name);
-}
-
-void set_pairing_name(EC_PAIRING p, const char* name)
-{
-    int len = strlen(name) + 1;
-
-    p->pairing_name = (char*)malloc(sizeof(char) * len);
-
-    strcpy(p->pairing_name, name);
-}
-
 //----------------------------------------------
 //  function release field "bn254"
 //----------------------------------------------
@@ -561,7 +531,7 @@ void ec_bn254_fp12a_new(Field f)
     //-----------------------------------------
     mpz_init(f->order);
     mpz_mul(f->order, f->base->order, f->base->order);
-        
+
     mpz_init_set_str(f->OP1_1, "0", 16);
     mpz_init_set_str(f->OP1_2, "0", 16);
     mpz_init_set_str(f->OP2, "0", 16);
@@ -655,7 +625,7 @@ void ec_bn254_fp12a_new_for_pairing_init(Field f)
     //-----------------------------------------
     mpz_init(f->order);
     mpz_mul(f->order, f->base->order, f->base->order);
-        
+
     mpz_init_set_str(f->OP1_1, "0", 16);
     mpz_init_set_str(f->OP1_2, "0", 16);
     mpz_init_set_str(f->OP2, "0", 16);
@@ -1201,7 +1171,7 @@ void ec_bn254_fp12b_new_for_pairing_init(Field f)
     ec_bn254_fp6b_new_for_pairing_init(f->base);
     f->base->field_init  = ec_bn254_fp6b_new;
     f->base->field_clear = ec_bn254_field_clear;
-    
+
 
     //-----------------------------------------
     //  characteristic of prime field
@@ -1506,7 +1476,7 @@ void ec_bn254_pairing_a_new(EC_PAIRING p)
     ec_bn254_fp12a_new_for_pairing_init(p->g3);
     p->g3->field_init  = ec_bn254_fp12a_new;
     p->g3->field_clear = ec_bn254_field_clear;
-    
+
     ec_bn254_pairing_precomp_beuchat(p);
 }
 

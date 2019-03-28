@@ -14,23 +14,24 @@ LDFLAGS = @LDFLAGS@
 
 FPIC = -fPIC
 
-OBJS  = bn254_fp.o
-OBJS += bn254_fp2.o
-OBJS += bn254_fp6.o
-OBJS += bn254_fp12.o
-OBJS += ec_bn254_fp.o
-OBJS += ec_bn254_fp2.o
-OBJS += ec_bn254_pairing.o
-OBJS += ec_bn254_lib.o
+OBJS  = bls509_fp.o
+# OBJS += bls509_fp2.o
+# OBJS += bls509_fp4.o
+# OBJS += bls509_fp12.o
+# OBJS += bls509_fp24.o
+# OBJS += ec_bls509_fp.o
+# OBJS += ec_bls509_fp4.o
+# OBJS += ec_bls509_pairing.o
+OBJS += ec_bls509_lib.o
 
 all: $(OBJS)
-	@echo compiled ec_bn254 functions.
+	@echo compiled ec_bls509 functions.
 
 %.o: %.c
 	$(CC) $(FPIC) $(CFLAGS) -c $< $(INCDIR) $(LIBDIR)
 
 check:
-	@echo test for ec_bn254.
+	@echo test for ec_bls509.
 	make -C test/
 	make check -C test/
 
