@@ -38,6 +38,7 @@ OBJS2 += ec_bn254_fp2.o
 OBJS2 += ec_bn254_pairing.o
 OBJS2 += ec_bn254_lib.o
 OBJS3  = bls509_fp.o
+OBJS3 += bls509_fp2.o
 OBJS3 += ec_bls509_lib.o
 
 OBJS  = $(OBJS1:%=../../%)

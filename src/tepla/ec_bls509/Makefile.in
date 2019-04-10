@@ -15,7 +15,7 @@ LDFLAGS = @LDFLAGS@
 FPIC = -fPIC
 
 OBJS  = bls509_fp.o
-# OBJS += bls509_fp2.o
+OBJS += bls509_fp2.o
 # OBJS += bls509_fp4.o
 # OBJS += bls509_fp12.o
 # OBJS += bls509_fp24.o

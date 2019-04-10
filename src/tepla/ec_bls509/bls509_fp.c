@@ -179,7 +179,7 @@ int bls509_fp_sqrt(Element z, const Element x)
     mpz_init_set(exp, order(x));
 
     mpz_add_ui(exp, exp, 1);
-    mpz_div_ui(exp, exp, 4);
+    mpz_fdiv_q_2exp(exp, exp, 2);
 
     bls509_fp_pow(z, x, exp);
 
