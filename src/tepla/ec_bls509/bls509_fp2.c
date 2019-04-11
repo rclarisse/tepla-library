@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 //  bls509_fp2 Fp2 := Fp[x]/(x^2 + 1) CLN
 //--------------------------------------------------------------
-//  2015.10.31 created by kanbara
+//  2019.03.27 created by rclarisse
 //==============================================================
 
 #include "ec_bls509_lcl.h"
@@ -253,11 +253,12 @@ void bls509_fp2_tri(Element z, const Element x)
     bls509_fp_tri(rep1(z), rep1(x));
 }
 
-// multiplication by the root / indeterminate
+// multiplication by x + 1
+// needed for multiplication in Fp4 := Fp2[y]/(y^2 + x + 1)
 void bls509_fp2_xi_mul(Element z, const Element x)
 {
-    bls509_fp_neg(rep0(z), rep1(x));
-    bls509_fp_set(rep1(z), rep0(x));
+    bls509_fp_sub(rep0(z), rep0(x), rep1(x)); // z0 = x0 - x1
+    bls509_fp_add(rep1(z), rep0(x), rep1(x)); // z1 = x0 + x1
 }
 
 // WHAT THE F*CK IS IT DOING ???
