@@ -36,6 +36,9 @@ OBJSBN  += ec_bn254_fp2.o
 OBJSBN  += ec_bn254_pairing.o
 OBJSBN  += ec_bn254_lib.o
 OBJSBLS  = bls509_fp.o
+OBJSBLS += bls509_fp2.o
+OBJSBLS += bls509_fp4.o
+OBJSBLS += ec_bls509_lib.o
 
 all: $(TARGET)
 	@echo compiling the ec_bn254 and ec_bls509

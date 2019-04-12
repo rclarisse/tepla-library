@@ -93,8 +93,8 @@ void bls509_fp4_set_str(Element x, const char *s)
 
     bls509_fp_set_str(rep0(rep0(x)), msg);
     bls509_fp_set_str(rep0(rep1(x)), ++c[0]);
-    bls509_fp_set_str(rep1(rep0(x)), ++c[2]);
-    bls509_fp_set_str(rep1(rep1(x)), ++c[3]);
+    bls509_fp_set_str(rep1(rep0(x)), ++c[1]);
+    bls509_fp_set_str(rep1(rep1(x)), ++c[2]);
 }
 
 void bls509_fp4_get_str(char *s, const Element x)
@@ -359,7 +359,6 @@ void bls509_fp4_mod(Element z, const Element x)
 {
     bls509_fp2_mod(rep0(z), rep0(x));
     bls509_fp2_mod(rep1(z), rep1(x));
-    bls509_fp2_mod(rep2(z), rep2(x));
 }
 
 // void bls509_fp4_OP1_1(Element z, const Element x)
@@ -494,39 +493,24 @@ int bls509_fp4_cmp(const Element x, const Element y)
     return 1;
 }
 
+// element in Fp4 is a square in Fp4 iff its relative norm over Fp2
+// is a square in Fp2
+// relative norm being x0^2 + x1^2*xi
 int bls509_fp4_is_sqr(const Element x)
 {
-    int k = 1;
-
     Element *t = field(x)->base->tmp;
 
     if (element_is_zero(x)) {
         return FALSE;
     }
 
-    k *= bls509_fp2_is_sqr(rep2(x)) ? 1 : -1;
+    bls509_fp2_sqr(t[0], rep0(x)); // t0 = x0^2
+    bls509_fp2_sqr(t[1], rep1(x)); // t1 = x1^2
 
-    bls509_fp2_sqr(t[1], rep1(x));
-    bls509_fp2_mul(t[2], rep0(x), rep2(x));
-    bls509_fp2_sub(t[1], t[1], t[2]);      // t1 = x1^2-x0*x2
-    bls509_fp2_mul(t[2], rep0(x), rep1(x));
-    bls509_fp2_sqr(t[3], rep2(x));
-    bls509_fp2_xi_mul(t[3], t[3]);
-    bls509_fp2_sub(t[2], t[2], t[3]);      // t2 = x0*x1-x2^2*xi
-    bls509_fp2_inv(t[1], t[1]);
-    bls509_fp2_mul(t[1], t[1], t[2]);      // t1 = t2 / t1
+    bls509_fp2_xi_mul(t[1], t[1]); // t1 = x1^2*xi
+    bls509_fp2_add(t[0], t[0], t[1]);
 
-    bls509_fp2_inv(t[2], rep2(x));
-    bls509_fp2_mul(t[3], t[2], rep1(x));
-    bls509_fp2_sub(t[3], t[3], t[1]);
-    bls509_fp2_mul(t[3], t[3], t[1]);      // t3 = ((x1/x2)-t1)t1
-
-    bls509_fp2_mul(t[2], t[2], rep0(x));
-    bls509_fp2_sub(t[2], t[2], t[3]);      // t2 = (x0/x2)-t3
-
-    k *= bls509_fp2_is_sqr(t[2]) ? 1 : -1;
-
-    return (k == 1);
+    return bls509_fp2_is_sqr(t[0]);
 }
 
 //-------------------------------------------
@@ -536,7 +520,6 @@ void bls509_fp4_random(Element z)
 {
     bls509_fp2_random(rep0(z));
     bls509_fp2_random(rep1(z));
-    bls509_fp2_random(rep2(z));
 }
 
 //-------------------------------------------
@@ -544,12 +527,8 @@ void bls509_fp4_random(Element z)
 //-------------------------------------------
 void bls509_fp4_to_mpz(mpz_t a, const Element x)
 {
-    mpz_mul(a, rep(rep1(rep2(x))), field(x)->base->base->order);   // a = rep12*p
-    mpz_add(a, a, rep(rep1(rep1(x))));   // a = a + rep11
-    mpz_mul(a, a, field(x)->base->base->order);   // a = a*p
+    mpz_mul(a, rep(rep1(rep1(x))), field(x)->base->base->order);   // a = rep11*p
     mpz_add(a, a, rep(rep1(rep0(x))));   // a = a + rep10
-    mpz_mul(a, a, field(x)->base->base->order);   // a = a*p
-    mpz_add(a, a, rep(rep0(rep2(x))));   // a = a + rep02
     mpz_mul(a, a, field(x)->base->base->order);   // a = a*p
     mpz_add(a, a, rep(rep0(rep1(x))));   // a = a + rep01
     mpz_mul(a, a, field(x)->base->base->order);   // a = a*p
@@ -560,7 +539,7 @@ void bls509_fp4_to_oct(unsigned char *os, size_t *size, const Element x)
 {
     size_t s0;
 
-    unsigned char b0[190];
+    unsigned char b0[256];
     mpz_t z;
 
     mpz_init(z);
@@ -568,11 +547,11 @@ void bls509_fp4_to_oct(unsigned char *os, size_t *size, const Element x)
     bls509_fp4_to_mpz(z, x);
     mpz_export(b0, &s0, 1, sizeof(*b0), 1, 0, z);
 
-    memset(os, 0x00, 190);
+    memset(os, 0x00, 256);
 
-    memcpy(&os[190 - (int)s0], b0, s0);
+    memcpy(&os[256 - (int)s0], b0, s0);
 
-    (*size) = 190;
+    (*size) = 256;
 
     mpz_clear(z);
 }
@@ -581,7 +560,7 @@ void bls509_fp4_from_oct(Element x, const unsigned char *os, const size_t size)
 {
     mpz_t quo, rem;
 
-    if (size < 190) {
+    if (size < 256) {
         fprintf(stderr, "error: please set up the enought buffer for element\n");
         exit(300);
     }
@@ -596,13 +575,9 @@ void bls509_fp4_from_oct(Element x, const unsigned char *os, const size_t size)
     mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->order);
     mpz_set(rep(rep0(rep1(x))), rem);
     mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->order);
-    mpz_set(rep(rep0(rep2(x))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->order);
     mpz_set(rep(rep1(rep0(x))), rem);
     mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->order);
     mpz_set(rep(rep1(rep1(x))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->order);
-    mpz_set(rep(rep1(rep2(x))), rem);
 
     mpz_clear(quo);
     mpz_clear(rem);

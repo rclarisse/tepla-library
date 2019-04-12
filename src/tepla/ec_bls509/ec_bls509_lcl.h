@@ -178,7 +178,7 @@ void bls509_fp2_mul_c(Element z, const Element x, const mpz_t c);
 void bls509_fp2_div_2(Element z, const Element x);
 void bls509_fp2_sqr(Element z, const Element x);
 void bls509_fp2_sqrn(Element z, const Element x);
-// void bls509_fp2_xi_mul(Element z, const Element x);
+void bls509_fp2_xi_mul(Element z, const Element x);
 // void bls509_fp2_xi_mul_inv(Element z, const Element x);
 void bls509_fp2_inv(Element z, const Element x);
 void bls509_fp2_pow(Element z, const Element x, const mpz_t exp);
@@ -201,51 +201,51 @@ void bls509_fp2_from_oct(Element z, const unsigned char *os, const size_t size);
 // //----------------------------------------------
 // // declaration function of field bls509_fp4
 // //----------------------------------------------
-// void bls509_fp4_init(Element x);
-// void bls509_fp4_clear(Element x);
-// void bls509_fp4_set(Element x, const Element y);
-// void bls509_fp4_set_fp2(Element z, const Element w, const Element x, const Element y);
-// void bls509_fp4_set_str(Element x, const char *s);
-// void bls509_fp4_get_str(char *s, const Element x);
-// void bls509_fp4_set_zero(Element x);
-// void bls509_fp4_set_one(Element x);
-// void bls509_fp4_add(Element z, const Element x, const Element y);
-// void bls509_fp4_addn(Element z, const Element x, const Element y);
-// void bls509_fp4_dob(Element z, const Element x);
-// void bls509_fp4_tri(Element z, const Element x);
-// void bls509_fp4_neg(Element z, const Element x);
-// void bls509_fp4_sub(Element z, const Element x, const Element y);
-// void bls509_fp4_subn(Element z, const Element x, const Element y);
-// void bls509_fp4_mul(Element z, const Element x, const Element y);
-// void bls509_fp4_muln(Element z, const Element x, const Element y);
-// void bls509_fp4_gm_mul(Element z, const Element x);
-//
-// void bls509_fp4_mul_fp2(Element z, const Element x, const Element y);
-// void bls509_fp4_mul_fp2_2(Element z, const Element y, const Element x1, const Element x2);
-//
-// void bls509_fp4_mul_fp2_3(Element z, const Element x, const Element y);
-// void bls509_fp4_mul_fp2_4(Element z, const Element y, const Element x1, const Element x2);
-//
-// void bls509_fp4_pow(Element z, const Element x, const mpz_t exp);
-// void bls509_fp4_conj(Element z, const Element x);
-// void bls509_fp4_sqr(Element z, const Element x);
-// int  bls509_fp4_sqrt(Element z, const Element x);
-// void bls509_fp4_inv(Element z, const Element x);
-// void bls509_fp4_mod(Element z, const Element x);
-// void bls509_fp4_OP1_1(Element z, const Element x);
-// void bls509_fp4_OP1_2(Element z, const Element x);
-// void bls509_fp4_OP2(Element z, const Element x);
-// void bls509_fp4_frob_p(Element z, const Element x);
-// int  bls509_fp4_is_zero(const Element x);
-// int  bls509_fp4_is_one(const Element x);
-// int  bls509_fp4_is_sqr(const Element x);
-// int  bls509_fp4_cmp(const Element x, const Element y);
-// void bls509_fp4_precomp(Field f);
-// void bls509_fp4_precomp_for_pairing_init(Field f);
-// void bls509_fp4_random(Element z);
-// void bls509_fp4_to_oct(unsigned char *os, size_t *size, const Element x);
-// void bls509_fp4_from_oct(Element z, const unsigned char *os, const size_t size);
-//
+void bls509_fp4_init(Element x);
+void bls509_fp4_clear(Element x);
+void bls509_fp4_set(Element x, const Element y);
+void bls509_fp4_set_fp2(Element z, const Element x, const Element y);
+void bls509_fp4_set_str(Element x, const char *s);
+void bls509_fp4_get_str(char *s, const Element x);
+void bls509_fp4_set_zero(Element x);
+void bls509_fp4_set_one(Element x);
+void bls509_fp4_add(Element z, const Element x, const Element y);
+void bls509_fp4_addn(Element z, const Element x, const Element y);
+void bls509_fp4_dob(Element z, const Element x);
+void bls509_fp4_tri(Element z, const Element x);
+void bls509_fp4_neg(Element z, const Element x);
+void bls509_fp4_sub(Element z, const Element x, const Element y);
+void bls509_fp4_subn(Element z, const Element x, const Element y);
+void bls509_fp4_mul(Element z, const Element x, const Element y);
+void bls509_fp4_muln(Element z, const Element x, const Element y);
+void bls509_fp4_gm_mul(Element z, const Element x);
+
+void bls509_fp4_mul_fp2(Element z, const Element x, const Element y);
+void bls509_fp4_mul_fp2_2(Element z, const Element y, const Element x1, const Element x2);
+
+void bls509_fp4_mul_fp2_3(Element z, const Element x, const Element y);
+void bls509_fp4_mul_fp2_4(Element z, const Element y, const Element x1, const Element x2);
+
+void bls509_fp4_pow(Element z, const Element x, const mpz_t exp);
+void bls509_fp4_conj(Element z, const Element x);
+void bls509_fp4_sqr(Element z, const Element x);
+int  bls509_fp4_sqrt(Element z, const Element x);
+void bls509_fp4_inv(Element z, const Element x);
+void bls509_fp4_mod(Element z, const Element x);
+void bls509_fp4_OP1_1(Element z, const Element x);
+void bls509_fp4_OP1_2(Element z, const Element x);
+void bls509_fp4_OP2(Element z, const Element x);
+void bls509_fp4_frob_p(Element z, const Element x);
+int  bls509_fp4_is_zero(const Element x);
+int  bls509_fp4_is_one(const Element x);
+int  bls509_fp4_is_sqr(const Element x);
+int  bls509_fp4_cmp(const Element x, const Element y);
+void bls509_fp4_precomp(Field f);
+void bls509_fp4_precomp_for_pairing_init(Field f);
+void bls509_fp4_random(Element z);
+void bls509_fp4_to_oct(unsigned char *os, size_t *size, const Element x);
+void bls509_fp4_from_oct(Element z, const unsigned char *os, const size_t size);
+
 // //----------------------------------------------
 // // declaration function of field bls509_fp12
 // //----------------------------------------------
