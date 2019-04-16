@@ -165,17 +165,18 @@ void bls509_fp4_mul(Element z, const Element x, const Element y)
     //------------------------------------------
     //  z0 = x0*y0 - x1*y1*xi
     //------------------------------------------
-    bls509_fp2_xi_mul(t[2], t[1]);       // t2 = x1*y1*xi
-    bls509_fp2_sub(rep0(z), t[0], t[2]); // z0 = t0 - t2
+    bls509_fp2_xi_mul(t[2], t[1]);          // t2 = x1*y1*xi
 
     //------------------------------------------
     //  z1 = x0*y1 + x1*y0
     //------------------------------------------
-    bls509_fp2_add(t[2], t[0], t[1]);       // t2 = t0 + t1 = x0*y0 + x1*y1
-    bls509_fp2_add(t[3], rep0(x), rep1(x)); // t3 = x0 + x1
-    bls509_fp2_add(t[4], rep0(y), rep1(y)); // t4 = y0 + y1
-    bls509_fp2_mul(t[5], t[3], t[4]);       // t5 = t3*t4 = (x0 + x1)(y0 + y1)
-    bls509_fp2_sub(rep1(z), t[5], t[2]);    // z1 = t5 - t2
+    bls509_fp2_add(t[3], t[0], t[1]);       // t3 = t0 + t1 = x0*y0 + x1*y1
+    bls509_fp2_add(t[4], rep0(x), rep1(x)); // t4 = x0 + x1
+    bls509_fp2_add(t[5], rep0(y), rep1(y)); // t5 = y0 + y1
+    bls509_fp2_mul(t[6], t[5], t[4]);       // t6 = t4*t5 = (x0 + x1)(y0 + y1)
+
+    bls509_fp2_sub(rep0(z), t[0], t[2]); // z0 = t0 - t2
+    bls509_fp2_sub(rep1(z), t[6], t[3]);    // z1 = t5 - t2
 
 }
 
@@ -346,12 +347,12 @@ void bls509_fp4_inv(Element z, const Element x)
 
     bls509_fp2_sqr(t[0], rep0(x));    // t0 = x0^2
     bls509_fp2_sqr(t[1], rep1(x));    // t1 = x1^2
-    bls509_fp2_xi_mul(t[1], t[1]);    // t1 = x1^2 * xi
-    bls509_fp2_add(t[0], t[0], t[1]); // t0 = x0^2 + x1^2 * xi
-    bls509_fp2_inv(t[0], t[0]);
+    bls509_fp2_xi_mul(t[2], t[1]);    // t2 = x1^2 * xi
+    bls509_fp2_add(t[0], t[0], t[2]); // t0 = x0^2 + x1^2 * xi
+    bls509_fp2_inv(t[0], t[0]);       // t0 = (x0^2 + x1^2 * xi)^-1
 
     bls509_fp2_mul(rep0(z), rep0(x), t[0]);
-    bls509_fp2_mul(rep1(z), rep1(z), t[0]);
+    bls509_fp2_mul(rep1(z), rep1(x), t[0]);
     bls509_fp2_neg(rep1(z), rep1(z));
 }
 
@@ -400,13 +401,36 @@ void bls509_fp4_sqr(Element z, const Element x)
 
     bls509_fp2_addn(t[0], rep1(x), rep1(x)); // t0 = 2*x1
     bls509_fp2_muln(t[0], t[0], rep0(x));    // t0 = 2*x1*x0
-    bls509_fp2_mod(rep1(z), t[0]);           // z1 = t0
 
-    bls509_fp2_sqrn(t[0], rep0(x));    // t0 = x0^2
-    bls509_fp2_sqrn(t[1], rep1(x));    // t1 = x1^2
-    bls509_fp2_xi_mul(t[1], t[1]);     // t1 = x1^2*xi
-    bls509_fp2_subn(t[2], t[0], t[1]); // t2 = x0^2 - x1^2*xi
-    bls509_fp2_mod(rep0(z), t[2]);     // z0 = t2
+    bls509_fp2_sqrn(t[1], rep0(x));    // t1 = x0^2
+    bls509_fp2_sqrn(t[2], rep1(x));    // t2 = x1^2
+    bls509_fp2_xi_mul(t[3], t[2]);     // t3 = x1^2*xi
+    bls509_fp2_subn(t[2], t[1], t[3]); // t2 = x0^2 - x1^2*xi
+
+    bls509_fp2_mod(rep0(z), t[2]);
+    bls509_fp2_mod(rep1(z), t[0]);
+}
+
+void bls509_fp4_pow(Element z, const Element x, const mpz_t exp)
+{
+    long t, i;
+    Element c;
+
+    element_init(c, field(z));
+    element_set(c, x);
+
+    t = (long)mpz_sizeinbase(exp, 2);
+
+    for (i = t - 2; i >= 0; i--)
+    {
+        element_sqr(c, c);
+        if (mpz_tstbit(exp, i)) {
+            element_mul(c, c, x);
+        }
+    }
+
+    element_set(z, c);
+    element_clear(c);
 }
 
 /*
@@ -507,8 +531,8 @@ int bls509_fp4_is_sqr(const Element x)
     bls509_fp2_sqr(t[0], rep0(x)); // t0 = x0^2
     bls509_fp2_sqr(t[1], rep1(x)); // t1 = x1^2
 
-    bls509_fp2_xi_mul(t[1], t[1]); // t1 = x1^2*xi
-    bls509_fp2_add(t[0], t[0], t[1]);
+    bls509_fp2_xi_mul(t[2], t[1]); // t1 = x1^2*xi
+    bls509_fp2_add(t[0], t[0], t[2]);
 
     return bls509_fp2_is_sqr(t[0]);
 }

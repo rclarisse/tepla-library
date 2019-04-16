@@ -307,7 +307,7 @@ void ec_bls509_fp4_new(Field f)
     f->mul  = bls509_fp4_mul;
     f->sqr  = bls509_fp4_sqr;
     f->inv  = bls509_fp4_inv;
-    f->pow  = NULL; // bls509_fp4_pow;
+    f->pow  = bls509_fp4_pow;
     f->sqrt = NULL; // bls509_fp4_sqrt;
 
     f->is_zero = bls509_fp4_is_zero;
@@ -340,6 +340,11 @@ void ec_bls509_fp4_new(Field f)
     mpz_init_set_str(f->OP1_1, "0", 16);
     mpz_init_set_str(f->OP1_2, "0", 16);
     mpz_init_set_str(f->OP2, "0", 16);
+
+    //-----------------------------------------
+    //  pre-computation for square root
+    //-----------------------------------------
+    f->precomp = NULL;
 
     //-----------------------------------------
     //  irreducible polynomial: y^2 + x + 1
