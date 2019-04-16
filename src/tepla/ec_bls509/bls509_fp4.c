@@ -231,19 +231,16 @@ void bls509_fp4_mul(Element z, const Element x, const Element y)
 // }
 
 //--------------------------------------------------------
-//   z = x * gamma ( Fp12 : fp4[x]/x^2-gamma )
+//   z = x * beta ( Fp12 : Fp4[z]/z^3+beta ) and beta^2 = -xi
 //--------------------------------------------------------
-// void bls509_fp4_gm_mul(Element z, const Element x)
-// {
-//     if (z == x) {
-//         fprintf(stderr, "fail gm mul\n");
-//         exit(500);
-//     }
-//
-//     bls509_fp2_xi_mul(rep0(z), rep2(x));
-//     bls509_fp2_set(rep1(z), rep0(x));
-//     bls509_fp2_set(rep2(z), rep1(x));
-// }
+void bls509_fp4_beta_mul(Element z, const Element x)
+{
+    Element *t = field(z)->base->tmp;
+
+    bls509_fp2_xi_mul(t[0], rep1(x));
+    bls509_fp2_set(rep1(z), rep0(x));
+    bls509_fp2_neg(rep0(z), t[0]);
+}
 
 //--------------------------------------------------------
 //   z = x * (y, 0)

@@ -218,7 +218,7 @@ void bls509_fp4_sub(Element z, const Element x, const Element y);
 void bls509_fp4_subn(Element z, const Element x, const Element y);
 void bls509_fp4_mul(Element z, const Element x, const Element y);
 void bls509_fp4_muln(Element z, const Element x, const Element y);
-void bls509_fp4_gm_mul(Element z, const Element x);
+void bls509_fp4_beta_mul(Element z, const Element x);
 
 void bls509_fp4_mul_fp2(Element z, const Element x, const Element y);
 void bls509_fp4_mul_fp2_2(Element z, const Element y, const Element x1, const Element x2);
