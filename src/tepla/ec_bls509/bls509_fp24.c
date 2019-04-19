@@ -1,9 +1,9 @@
 //==============================================================
-//  finite field ( bls509_fp12 ) implementation with GMP
+//  finite field ( bls509_fp24 ) implementation with GMP
 //--------------------------------------------------------------
-//  bls509_fp12 Fp12 := Fp4[z]/(z^3 + y) CNL
+//  bls509_fp24 Fp24 := Fp12[z]/(t^2 + z) CNL
 //--------------------------------------------------------------
-//  2019.04.16 created by rclarisse
+//  2019.04.19 created by rclarisse
 //==============================================================
 
 #include "ec_bls509_lcl.h"
@@ -19,56 +19,52 @@
 //-------------------------------------------
 //  initialization, clear, set
 //-------------------------------------------
-void bls509_fp12_init(Element x)
+void bls509_fp24_init(Element x)
 {
-    x->data = (void *)malloc(sizeof(Element) * 3);
+    x->data = (void *)malloc(sizeof(Element) * 2);
 
     if (x->data == NULL) {
-        fprintf(stderr, "fail: allocate in bls509_fp12 init\n");
+        fprintf(stderr, "fail: allocate in bls509_fp24 init\n");
         exit(100);
     }
 
     element_init(rep0(x), field(x)->base);
     element_init(rep1(x), field(x)->base);
-    element_init(rep2(x), field(x)->base);
 }
 
-void bls509_fp12_clear(Element x)
+void bls509_fp24_clear(Element x)
 {
     if (x->data != NULL)
     {
         element_clear(rep0(x));
         element_clear(rep1(x));
-        element_clear(rep2(x));
 
         free(x->data);
         x->data = NULL;
     }
 }
 
-void bls509_fp12_set(Element x, const Element y)
+void bls509_fp24_set(Element x, const Element y)
 {
-    bls509_fp4_set(rep0(x), rep0(y));
-    bls509_fp4_set(rep1(x), rep1(y));
-    bls509_fp4_set(rep2(x), rep2(y));
+    bls509_fp12_set(rep0(x), rep0(y));
+    bls509_fp12_set(rep1(x), rep1(y));
 }
 
-void bls509_fp12_set_fp4(Element z, const Element w, const Element x, const Element y)
+void bls509_fp24_set_fp4(Element z, const Element w, const Element x, const Element y)
 {
-    bls509_fp4_set(rep0(z), w);
-    bls509_fp4_set(rep1(z), x);
-    bls509_fp4_set(rep2(z), y);
+    bls509_fp12_set(rep0(z), w);
+    bls509_fp12_set(rep1(z), x);
 }
 
-void bls509_fp12_set_str(Element x, const char *s)
+void bls509_fp24_set_str(Element x, const char *s)
 {
     int i = 0;
     int len = strlen(s);
 
-    char msg[1560], *p, *c[11];
+    char msg[3120], *p, *c[23];
 
-    if (len > 1560) {
-        fprintf(stderr, "error: input string is too long, string must be smaller than 1560\n");
+    if (len > 3120) {
+        fprintf(stderr, "error: input string is too long, string must be smaller than 3120\n");
         exit(200);
     }
 
@@ -79,7 +75,7 @@ void bls509_fp12_set_str(Element x, const char *s)
     while ((*p) != '\0')
     {
         if ((*p) == ' ') {
-            if (i < 11) {
+            if (i < 23) {
                 c[i] = p;
             }
             i++;
@@ -87,7 +83,7 @@ void bls509_fp12_set_str(Element x, const char *s)
         p++;
     }
 
-    if (i != 11) {
+    if (i != 23) {
         fprintf(stderr, "error: input string is not correct %d\n", i);
         exit(200);
     }
@@ -103,128 +99,141 @@ void bls509_fp12_set_str(Element x, const char *s)
     (*c[8]) = '\0';
     (*c[9]) = '\0';
     (*c[10]) = '\0';
+    (*c[11]) = '\0';
+    (*c[12]) = '\0';
+    (*c[13]) = '\0';
+    (*c[14]) = '\0';
+    (*c[15]) = '\0';
+    (*c[16]) = '\0';
+    (*c[17]) = '\0';
+    (*c[18]) = '\0';
+    (*c[19]) = '\0';
+    (*c[20]) = '\0';
+    (*c[21]) = '\0';
+    (*c[22]) = '\0';
 
-    bls509_fp_set_str(rep0(rep0(rep0(x))), msg);
-    bls509_fp_set_str(rep1(rep0(rep0(x))), ++c[0]);
-    bls509_fp_set_str(rep0(rep1(rep0(x))), ++c[1]);
-    bls509_fp_set_str(rep1(rep1(rep0(x))), ++c[2]);
-    bls509_fp_set_str(rep0(rep0(rep1(x))), ++c[3]);
-    bls509_fp_set_str(rep1(rep0(rep1(x))), ++c[4]);
-    bls509_fp_set_str(rep0(rep1(rep1(x))), ++c[5]);
-    bls509_fp_set_str(rep1(rep1(rep1(x))), ++c[6]);
-    bls509_fp_set_str(rep0(rep0(rep2(x))), ++c[7]);
-    bls509_fp_set_str(rep1(rep0(rep2(x))), ++c[8]);
-    bls509_fp_set_str(rep0(rep1(rep2(x))), ++c[9]);
-    bls509_fp_set_str(rep1(rep1(rep2(x))), ++c[10]);
+    bls509_fp_set_str(rep0(rep0(rep0(rep0(x)))), msg);
+    bls509_fp_set_str(rep1(rep0(rep0(rep0(x)))), ++c[0]);
+    bls509_fp_set_str(rep0(rep1(rep0(rep0(x)))), ++c[1]);
+    bls509_fp_set_str(rep1(rep1(rep0(rep0(x)))), ++c[2]);
+    bls509_fp_set_str(rep0(rep0(rep1(rep0(x)))), ++c[3]);
+    bls509_fp_set_str(rep1(rep0(rep1(rep0(x)))), ++c[4]);
+    bls509_fp_set_str(rep0(rep1(rep1(rep0(x)))), ++c[5]);
+    bls509_fp_set_str(rep1(rep1(rep1(rep0(x)))), ++c[6]);
+    bls509_fp_set_str(rep0(rep0(rep2(rep0(x)))), ++c[7]);
+    bls509_fp_set_str(rep1(rep0(rep2(rep0(x)))), ++c[8]);
+    bls509_fp_set_str(rep0(rep1(rep2(rep0(x)))), ++c[9]);
+    bls509_fp_set_str(rep1(rep1(rep2(rep0(x)))), ++c[10]);
+    bls509_fp_set_str(rep0(rep0(rep0(rep1(x)))), ++c[11]);
+    bls509_fp_set_str(rep1(rep0(rep0(rep1(x)))), ++c[12]);
+    bls509_fp_set_str(rep0(rep1(rep0(rep1(x)))), ++c[13]);
+    bls509_fp_set_str(rep1(rep1(rep0(rep1(x)))), ++c[14]);
+    bls509_fp_set_str(rep0(rep0(rep1(rep1(x)))), ++c[15]);
+    bls509_fp_set_str(rep1(rep0(rep1(rep1(x)))), ++c[16]);
+    bls509_fp_set_str(rep0(rep1(rep1(rep1(x)))), ++c[17]);
+    bls509_fp_set_str(rep1(rep1(rep1(rep1(x)))), ++c[18]);
+    bls509_fp_set_str(rep0(rep0(rep2(rep1(x)))), ++c[19]);
+    bls509_fp_set_str(rep1(rep0(rep2(rep1(x)))), ++c[20]);
+    bls509_fp_set_str(rep1(rep1(rep2(rep1(x)))), ++c[21]);
+    bls509_fp_set_str(rep1(rep1(rep2(rep1(x)))), ++c[22]);
 }
 
-void bls509_fp12_get_str(char *s, const Element x)
+void bls509_fp24_get_str(char *s, const Element x)
 {
     char s0[130], s1[130], s2[130], s3[130], s4[130], s5[130], s6[130], s7[130], s8[130], s9[130], s10[130], s11[130];
+    char s12[130], s13[130], s13[130], s14[130], s15[130], s16[130], s17[130], s18[130], s19[130], s20[130], s21[130];
+    char s22[130], s23[130];
 
-    bls509_fp_get_str(s0, rep0(rep0(rep0(x))));
-    bls509_fp_get_str(s1, rep1(rep0(rep0(x))));
-    bls509_fp_get_str(s2, rep0(rep1(rep0(x))));
-    bls509_fp_get_str(s3, rep1(rep1(rep0(x))));
-    bls509_fp_get_str(s4, rep0(rep0(rep1(x))));
-    bls509_fp_get_str(s5, rep1(rep0(rep1(x))));
-    bls509_fp_get_str(s6, rep0(rep1(rep1(x))));
-    bls509_fp_get_str(s7, rep1(rep1(rep1(x))));
-    bls509_fp_get_str(s8, rep0(rep0(rep2(x))));
-    bls509_fp_get_str(s9, rep1(rep0(rep2(x))));
-    bls509_fp_get_str(s10, rep0(rep1(rep2(x))));
-    bls509_fp_get_str(s11, rep1(rep1(rep2(x))));
+    bls509_fp_get_str(s0,  rep0(rep0(rep0(rep0(x)))));
+    bls509_fp_get_str(s1,  rep1(rep0(rep0(rep0(x)))));
+    bls509_fp_get_str(s2,  rep0(rep1(rep0(rep0(x)))));
+    bls509_fp_get_str(s3,  rep1(rep1(rep0(rep0(x)))));
+    bls509_fp_get_str(s4,  rep0(rep0(rep1(rep0(x)))));
+    bls509_fp_get_str(s5,  rep1(rep0(rep1(rep0(x)))));
+    bls509_fp_get_str(s6,  rep0(rep1(rep1(rep0(x)))));
+    bls509_fp_get_str(s7,  rep1(rep1(rep1(rep0(x)))));
+    bls509_fp_get_str(s8,  rep0(rep0(rep2(rep0(x)))));
+    bls509_fp_get_str(s9,  rep1(rep0(rep2(rep0(x)))));
+    bls509_fp_get_str(s10, rep0(rep1(rep2(rep0(x)))));
+    bls509_fp_get_str(s11, rep1(rep1(rep2(rep0(x)))));
+    bls509_fp_get_str(s12, rep0(rep0(rep0(rep1(x)))));
+    bls509_fp_get_str(s13, rep1(rep0(rep0(rep1(x)))));
+    bls509_fp_get_str(s14, rep0(rep1(rep0(rep1(x)))));
+    bls509_fp_get_str(s15, rep1(rep1(rep0(rep1(x)))));
+    bls509_fp_get_str(s16, rep0(rep0(rep1(rep1(x)))));
+    bls509_fp_get_str(s17, rep1(rep0(rep1(rep1(x)))));
+    bls509_fp_get_str(s18, rep0(rep1(rep1(rep1(x)))));
+    bls509_fp_get_str(s19, rep1(rep1(rep1(rep1(x)))));
+    bls509_fp_get_str(s20, rep0(rep0(rep2(rep1(x)))));
+    bls509_fp_get_str(s21, rep1(rep0(rep2(rep1(x)))));
+    bls509_fp_get_str(s22, rep0(rep1(rep2(rep1(x)))));
+    bls509_fp_get_str(s23, rep1(rep1(rep2(rep1(x)))));
 
     sprintf(s, "%s %s %s %s %s %s %s %s %s %s %s %s", s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11);
 }
 
-void bls509_fp12_set_zero(Element x)
+void bls509_fp24_set_zero(Element x)
 {
-    bls509_fp4_set_zero(rep0(x));
-    bls509_fp4_set_zero(rep1(x));
-    bls509_fp4_set_zero(rep2(x));
+    bls509_fp12_set_zero(rep0(x));
+    bls509_fp12_set_zero(rep1(x));
 }
 
-void bls509_fp12_set_one(Element x)
+void bls509_fp24_set_one(Element x)
 {
-    bls509_fp4_set_one(rep0(x));
-    bls509_fp4_set_zero(rep1(x));
-    bls509_fp4_set_zero(rep2(x));
+    bls509_fp12_set_one(rep0(x));
+    bls509_fp12_set_zero(rep1(x));
 }
 
 //-------------------------------------------
 //  arithmetic operation
 //-------------------------------------------
-void bls509_fp12_add(Element z, const Element x, const Element y)
+void bls509_fp24_add(Element z, const Element x, const Element y)
 {
-    bls509_fp4_add(rep0(z), rep0(x), rep0(y));
-    bls509_fp4_add(rep1(z), rep1(x), rep1(y));
-    bls509_fp4_add(rep2(z), rep2(x), rep2(y));
+    bls509_fp12_add(rep0(z), rep0(x), rep0(y));
+    bls509_fp12_add(rep1(z), rep1(x), rep1(y));
 }
 
-void bls509_fp12_neg(Element z, const Element x)
+void bls509_fp24_neg(Element z, const Element x)
 {
-    bls509_fp4_neg(rep0(z), rep0(x));
-    bls509_fp4_neg(rep1(z), rep1(x));
-    bls509_fp4_neg(rep2(z), rep2(x));
+    bls509_fp12_neg(rep0(z), rep0(x));
+    bls509_fp12_neg(rep1(z), rep1(x));
 }
 
-void bls509_fp12_sub(Element z, const Element x, const Element y)
+void bls509_fp24_sub(Element z, const Element x, const Element y)
 {
-    bls509_fp4_sub(rep0(z), rep0(x), rep0(y));
-    bls509_fp4_sub(rep1(z), rep1(x), rep1(y));
-    bls509_fp4_sub(rep2(z), rep2(x), rep2(y));
+    bls509_fp12_sub(rep0(z), rep0(x), rep0(y));
+    bls509_fp12_sub(rep1(z), rep1(x), rep1(y));
 }
 
-void bls509_fp12_mul(Element z, const Element x, const Element y)
+void bls509_fp24_mul(Element z, const Element x, const Element y)
 {
     Element *t = field(z)->base->tmp;
 
-    bls509_fp4_mul(t[0], rep0(x), rep0(y)); // t0 = x0*y0
-    bls509_fp4_mul(t[1], rep1(x), rep1(y)); // t1 = x1*y1
-    bls509_fp4_mul(t[2], rep2(x), rep2(y)); // t2 = x2*y2
+    bls509_fp2_mul(t[0], rep0(x), rep0(y));  // t0 = x0*y0
+    bls509_fp2_mul(t[1], rep1(x), rep1(y));  // t1 = x1*y1
 
-    bls509_fp4_add(t[4], rep0(x), rep1(x));
-    bls509_fp4_add(t[5], rep0(y), rep1(y));
-    bls509_fp4_mul(t[3], t[4], t[5]);       // t3 = (x0 + x1)*(y0 + y1)
-
-    bls509_fp4_add(t[5], rep0(x), rep2(x));
-    bls509_fp4_add(t[6], rep0(y), rep2(y));
-    bls509_fp4_mul(t[4], t[5], t[6]);       // t4 = (x0 + x2)*(y0 + y2)
-
-    bls509_fp4_add(t[6], rep1(x), rep2(x));
-    bls509_fp4_add(t[7], rep1(y), rep2(y));
-    bls509_fp4_mul(t[5], t[6], t[7]);       // t5 = (x1 + x2)*(y1 + y2)
+    bls509_fp12_add(t[2], rep0(x), rep1(x)); // t2 = x0 + x1
+    bls509_fp12_add(t[3], rep0(y), rep1(y)); // t3 = y0 + y1
 
     //------------------------------------------
-    //  z0 = x0*y0 - beta*(x1*y2 + x2*y1)
+    //  z0 = x0*y0 - x1*y1*gamma
     //------------------------------------------
-    bls509_fp4_sub(t[6], t[5], t[1]);
-    bls509_fp4_sub(t[6], t[6], t[2]);
-    bls509_fp4_beta_mul(t[6], t[6]);
-    bls509_fp4_sub(rep0(z), t[0], t[6]);
+    bls509_fp12_gamma_mul(t[4], t[1]);   // t4 = x1*y1*gamma
+    bls509_fp2_sub(rep0(z), t[0], t[4]); // z0 = x0*y0 - x1*y1*gamma
 
     //------------------------------------------
-    //  z1 = x0*y1 + x1*y0 - beta*x2*y2
+    //  z1 = x0*y1 + x1*y0
     //------------------------------------------
-    bls509_fp4_sub(t[6], t[3], t[0]);
-    bls509_fp4_sub(t[6], t[6], t[1]);
-    bls509_fp4_beta_mul(t[7], t[2]);
-    bls509_fp4_sub(rep1(z), t[6], t[7]);
-
-    //------------------------------------------
-    //  z2 = x0*y2 + x2*y0 + x1*y1
-    //------------------------------------------
-    bls509_fp4_sub(t[6], t[4], t[0]);
-    bls509_fp4_sub(t[6], t[6], t[2]);
-    bls509_fp4_add(rep2(z), t[6], t[1]);
+    bls509_fp12_add(t[4], t[0], t[1]);   // t4 = t0 + t1 = x0*y0 + x1*y1
+    bls509_fp12_mul(t[5], t[2], t[3]);   // t5 = t2*t3 = (x0 + x1)*(y0 + y1)
+    bls509_fp2_sub(rep1(z), t[5], t[4]); // z1 = t5 - t4
 }
 
 //----------------------------------------------------------
 //  Input  : z in Fp12 and l0, l3, l4 in Fp2
 //  Output : z *= { (x0, 0, 0), (x1, x2, 0) } in Fp12
 //----------------------------------------------------------
-// void bls509_fp12_mul_L(Element z, Element x0, Element x1, Element x2)
+// void bls509_fp24_mul_L(Element z, Element x0, Element x1, Element x2)
 // {
 //     Element *v = field(z)->base->tmp;
 //
@@ -243,7 +252,7 @@ void bls509_fp12_mul(Element z, const Element x, const Element y)
 //  Input  : z in Fp12 and l0, l2, l4 in Fp2
 //  Output : z *= { (x0, 0, x1), (0, x2, 0) } in Fp12
 //----------------------------------------------------------
-// void bls509_fp12_mul_L2(Element z, Element x0, Element x1, Element x2)
+// void bls509_fp24_mul_L2(Element z, Element x0, Element x1, Element x2)
 // {
 //     Element *v = field(z)->base->tmp;
 //
@@ -260,135 +269,71 @@ void bls509_fp12_mul(Element z, const Element x, const Element y)
 //     bls509_fp6_add(rep0(z), rep0(z), v[0]);
 // }
 
-//--------------------------------------------------------
-//   z = x * beta ( Fp12 : Fp4[z]/z^3+beta ) and beta^2 = -xi
-//--------------------------------------------------------
-void bls509_fp12_gamma_mul(Element z, const Element x)
+void bls509_fp24_inv(Element z, const Element x)
 {
     Element *t = field(z)->base->tmp;
 
-    bls509_fp4_beta_mul(t[0], rep2(x));
-    bls509_fp4_set(rep2(z), rep1(x));
-    bls509_fp4_set(rep1(z), rep0(x));
-    bls509_fp4_neg(rep0(z), t[0]);
+    bls509_fp12_sqr(t[0], rep0(x));    // t0 = x0^2
+    bls509_fp12_sqr(t[1], rep1(x));    // t1 = x1^2
+    bls509_fp12_gamma_mul(t[2], t[1]); // t2 = x1^2*gamma
+    bls509_fp12_add(t[0], t[0], t[2]);  // t0 = x0^2 + x1^2*gamma
+    bls509_fp12_inv(t[0], t[0]);       // t0 = (x0^2 + x1^2*gamma)^-1
+
+    bls509_fp12_mul(rep0(z), rep0(x), t[0]);
+    bls509_fp12_mul(rep1(z), rep1(x), t[0]);
+    bls509_fp12_neg(rep1(z), rep1(z));
 }
 
-void bls509_fp12_beta_mul(Element z, const Element x)
+void bls509_fp24_dob(Element z, const Element x)
 {
-    bls509_fp4_beta_mul(rep0(z), rep0(x));
-    bls509_fp4_beta_mul(rep1(z), rep1(x));
-    bls509_fp4_beta_mul(rep2(z), rep2(x));
+    bls509_fp12_dob(rep0(z), rep0(x));
+    bls509_fp12_dob(rep1(z), rep1(x));
 }
 
-void bls509_fp12_xi_mul(Element z, const Element x)
+void bls509_fp24_tri(Element z, const Element x)
 {
-    bls509_fp4_xi_mul(rep0(z), rep0(x));
-    bls509_fp4_xi_mul(rep1(z), rep1(x));
-    bls509_fp4_xi_mul(rep2(z), rep2(x));
+    bls509_fp12_tri(rep0(z), rep0(x));
+    bls509_fp12_tri(rep1(z), rep1(x));
+    bls509_fp12_tri(rep2(z), rep2(x));
 }
 
-void bls509_fp12_inv(Element z, const Element x)
-{
-    Element *t = field(z)->base->tmp;
-
-    bls509_fp4_sqr(t[0], rep0(x)); // t0 = x0^2
-    bls509_fp4_sqr(t[1], rep1(x)); // t1 = x1^2
-    bls509_fp4_sqr(t[2], rep2(x)); // t2 = x2^2
-
-    //------------------------------------------
-    //  z0 = 1/N(x) * (x0^2 + beta*x1*x2)
-    //------------------------------------------
-    bls509_fp4_mul(t[7], rep1(x), rep2(x)); // t7 = x1*x2
-    bls509_fp4_beta_mul(t[4], t[7]);        // t4 = beta*x1*x2
-    bls509_fp4_add(t[3], t[0], t[4]);       // t3 = x0^2 + beta*x1*x2
-
-    //------------------------------------------
-    //  z1 = -1/N(x) * (x0*x1 + beta*x2^2)
-    //------------------------------------------
-    bls509_fp4_mul(t[4], rep0(x), rep1(x)); // t4 = x0*x1
-    bls509_fp4_beta_mul(t[5], t[2]);        // t5 = beta*x2^2
-    bls509_fp4_add(t[4], t[4], t[5]);     // t4 = x0*x1 + beta*x2^2
-    bls509_fp4_neg(t[4], t[4]);
-
-    //------------------------------------------
-    //  z2 = 1/N(x) * (x1^2 - x0*x2)
-    //------------------------------------------
-    bls509_fp4_mul(t[6], rep0(x), rep2(x)); // t6 = x0*x2
-    bls509_fp4_sub(t[5], t[1], t[6]);       // t5 = x1^2 - x0*x2
-
-    //------------------------------------------
-    //  N(x) = x0^3 - beta*x1^3 - (alpha + 1)*x2^3 + 3*beta*x0*x1*x2
-    //------------------------------------------
-    bls509_fp4_add(t[6], t[7], t[7]);    // t6 = 2*x1*x2
-    bls509_fp4_add(t[6], t[6], t[7]);    // t6 = 3*x1*x2
-    bls509_fp4_beta_mul(t[6], t[6]);     // t6 = 3*beta*x1*x2
-    bls509_fp4_add(t[6], t[0], t[6]);    // t6 = x0^2 + 3*beta*x1*x2
-    bls509_fp4_mul(t[0], t[6], rep0(x)); // t0 = x0^3 + 3*beta*x0*x1*x2
-    bls509_fp4_mul(t[1], t[1], rep1(x)); // t1 = x1^3
-    bls509_fp4_beta_mul(t[1], t[1]);     // t1 = beta*x1^3
-    bls509_fp4_mul(t[2], t[2], rep2(x)); // t2 = x2^3
-    bls509_fp4_xi_mul(t[2], t[2]);       // t2 = (alpha + 1)*x2^3
-    bls509_fp4_add(t[6], t[1], t[2]);    // t6 = beta*x1^3 + (alpha + 1)*x2^3
-    bls509_fp4_sub(t[1], t[0], t[6]);    // t1 = x0^3 + 3*beta*x0*x1*x2 - beta*x1^3 - (alpha + 1)*x2^3
-
-    bls509_fp4_inv(t[0], t[1]); // t0 = 1/N(x)
-
-    bls509_fp4_mul(rep0(z), t[3], t[0]);
-    bls509_fp4_mul(rep1(z), t[4], t[0]);
-    bls509_fp4_mul(rep2(z), t[5], t[0]);
-}
-
-void bls509_fp12_dob(Element z, const Element x)
-{
-    bls509_fp4_dob(rep0(z), rep0(x));
-    bls509_fp4_dob(rep1(z), rep1(x));
-    bls509_fp4_dob(rep2(z), rep2(x));
-}
-
-void bls509_fp12_tri(Element z, const Element x)
-{
-    bls509_fp4_tri(rep0(z), rep0(x));
-    bls509_fp4_tri(rep1(z), rep1(x));
-    bls509_fp4_tri(rep2(z), rep2(x));
-}
-
-void bls509_fp12_sqr(Element z, const Element x)
+void bls509_fp24_sqr(Element z, const Element x)
 {
     Element *t = field(z)->base->tmp;
 
-    bls509_fp4_sqr(t[0], rep0(x)); // t0 = x0^2
-    bls509_fp4_sqr(t[1], rep1(x)); // t1 = x1^2
-    bls509_fp4_sqr(t[2], rep2(x)); // t2 = x2^2
+    bls509_fp12_sqr(t[0], rep0(x)); // t0 = x0^2
+    bls509_fp12_sqr(t[1], rep1(x)); // t1 = x1^2
+    bls509_fp12_sqr(t[2], rep2(x)); // t2 = x2^2
 
-    bls509_fp4_mul(t[3], rep0(x), rep1(x)); // t3 = x0*x1
-    bls509_fp4_mul(t[4], rep0(x), rep2(x)); // t4 = x0*x2
-    bls509_fp4_mul(t[5], rep1(x), rep2(x)); // t5 = x1*x2
+    bls509_fp12_mul(t[3], rep0(x), rep1(x)); // t3 = x0*x1
+    bls509_fp12_mul(t[4], rep0(x), rep2(x)); // t4 = x0*x2
+    bls509_fp12_mul(t[5], rep1(x), rep2(x)); // t5 = x1*x2
 
     //------------------------------------------
     //  z0 = x0^2 - 2*beta*x1*x2
     //------------------------------------------
-    bls509_fp4_beta_mul(t[6], t[5]);
-    bls509_fp4_dob(t[5], t[6]);          // t5 = 2*beta*x1*x2
-    bls509_fp4_sub(rep0(z), t[0], t[5]); // z0 = x0^2 - 2*beta*x1*x2
+    bls509_fp12_beta_mul(t[6], t[5]);
+    bls509_fp12_dob(t[5], t[6]);          // t5 = 2*beta*x1*x2
+    bls509_fp12_sub(rep0(z), t[0], t[5]); // z0 = x0^2 - 2*beta*x1*x2
 
     //------------------------------------------
     //  z1 = 2*x0*x1 - beta*x2^2
     //------------------------------------------
-    bls509_fp4_dob(t[3], t[3]);          // t3 = 2*x0*x1
-    bls509_fp4_beta_mul(t[6], t[2]);     // t2 = beta*x2^2
-    bls509_fp4_sub(rep1(z), t[3], t[6]); // z1 = 2*x0*x1 - beta*x2^2
+    bls509_fp12_dob(t[3], t[3]);          // t3 = 2*x0*x1
+    bls509_fp12_beta_mul(t[6], t[2]);     // t2 = beta*x2^2
+    bls509_fp12_sub(rep1(z), t[3], t[6]); // z1 = 2*x0*x1 - beta*x2^2
 
     //------------------------------------------
     //  z2 = 2*x0*x2 + x1^2
     //------------------------------------------
-    bls509_fp4_dob(t[4], t[4]);          // t4 = 2*x0*x2
-    bls509_fp4_add(rep2(z), t[4], t[1]); // z2 = 2*x0*x2 + x1^2
+    bls509_fp12_dob(t[4], t[4]);          // t4 = 2*x0*x2
+    bls509_fp12_add(rep2(z), t[4], t[1]); // z2 = 2*x0*x2 + x1^2
 }
 
 //-----------------------------------------------------------
 //  exponentiation z = x^exp
 //-----------------------------------------------------------
-void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
+void bls509_fp24_pow(Element z, const Element x, const mpz_t exp)
 {
     long t, i;
     Element c;
@@ -413,7 +358,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //-----------------------------------------------------------
 //  exponentiation z = x^exp with NAF
 //-----------------------------------------------------------
-// void bls509_fp12_pow_naf(Element z, const Element x, const mpz_t exp)
+// void bls509_fp24_pow_naf(Element z, const Element x, const mpz_t exp)
 // {
 //     long t, i;
 //     Element c, ix;
@@ -460,7 +405,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //  z = g + h*w  : g = g0 + g1*v + g2*v^2
 //               : h = h0 + h1*v + h2*v^2
 //-----------------------------------------------------------
-// void bls509_fp12_frob_p(Element z, const Element x)
+// void bls509_fp24_frob_p(Element z, const Element x)
 // {
 //     field_precomp_frob_p pf;
 //
@@ -469,7 +414,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     bls509_fp6_conj(rep0(z), rep0(x));
 //     bls509_fp6_conj(rep1(z), rep1(x));
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12a") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24a") == 0)
 //     {
 //         bls509_fp2_mul_p(rep0(rep1(z)), rep0(rep1(z)), (pf->gamma1)[0]);   //t2 = t2*gamma1
 //         bls509_fp2_mul_p(rep1(rep0(z)), rep1(rep0(z)), (pf->gamma1)[1]);   //t3 = t3*gamma2
@@ -478,7 +423,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //         bls509_fp2_mul_p(rep2(rep1(z)), rep2(rep1(z)), (pf->gamma1)[4]);   //t6 = t6*gamma5
 //     }
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12b") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24b") == 0)
 //     {
 //         bls509_fp2_mul(rep0(rep1(z)), rep0(rep1(z)), (pf->gamma1)[0]);   //t2 = t2*gamma1
 //         bls509_fp2_mul(rep1(rep0(z)), rep1(rep0(z)), (pf->gamma1)[1]);   //t3 = t3*gamma2
@@ -488,7 +433,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     }
 // }
 //
-// void bls509_fp12_frob_p2(Element z, const Element x)
+// void bls509_fp24_frob_p2(Element z, const Element x)
 // {
 //     field_precomp_frob_p pf;
 //
@@ -496,7 +441,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //
 //     bls509_fp2_set(rep0(rep0(z)), rep0(rep0(x)));   //t1 = g0;
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12a") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24a") == 0)
 //     {
 //         bls509_fp2_mul_p(rep0(rep1(z)), rep0(rep1(x)), (pf->gamma2)[0]);   //t2 = h0*gamma1
 //         bls509_fp2_mul_p(rep1(rep0(z)), rep1(rep0(x)), (pf->gamma2)[1]);   //t3 = g1*gamma2
@@ -505,7 +450,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //         bls509_fp2_mul_p(rep2(rep1(z)), rep2(rep1(x)), (pf->gamma2)[4]);   //t6 = h2*gamma5
 //     }
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12b") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24b") == 0)
 //     {
 //         bls509_fp2_mul(rep0(rep1(z)), rep0(rep1(x)), (pf->gamma2)[0]);   //t2 = h0*gamma1
 //         bls509_fp2_mul(rep1(rep0(z)), rep1(rep0(x)), (pf->gamma2)[1]);   //t3 = g1*gamma2
@@ -515,7 +460,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     }
 // }
 //
-// void bls509_fp12_frob_p3(Element z, const Element x)
+// void bls509_fp24_frob_p3(Element z, const Element x)
 // {
 //     field_precomp_frob_p pf;
 //
@@ -524,7 +469,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     bls509_fp6_conj(rep0(z), rep0(x));
 //     bls509_fp6_conj(rep1(z), rep1(x));
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12a") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24a") == 0)
 //     {
 //         bls509_fp2_mul_p(rep0(rep1(z)), rep0(rep1(z)), (pf->gamma3)[0]);   //t2 = t2*gamma1
 //         bls509_fp2_mul_p(rep1(rep0(z)), rep1(rep0(z)), (pf->gamma3)[1]);   //t3 = t3*gamma2
@@ -533,7 +478,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //         bls509_fp2_mul_p(rep2(rep1(z)), rep2(rep1(z)), (pf->gamma3)[4]);   //t6 = t6*gamma5
 //     }
 //
-//     if (strcmp(x->field->field_name, "bls509_fp12b") == 0)
+//     if (strcmp(x->field->field_name, "bls509_fp24b") == 0)
 //     {
 //         bls509_fp2_mul(rep0(rep1(z)), rep0(rep1(z)), (pf->gamma3)[0]);   //t2 = t2*gamma1
 //         bls509_fp2_mul(rep1(rep0(z)), rep1(rep0(z)), (pf->gamma3)[1]);   //t3 = t3*gamma2
@@ -543,7 +488,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     }
 // }
 //
-// void bls509_fp12_conj(Element z, const Element x)
+// void bls509_fp24_conj(Element z, const Element x)
 // {
 //     bls509_fp6_set(rep0(z), rep0(x));
 //     bls509_fp6_neg(rep1(z), rep1(x));
@@ -552,7 +497,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //------------------------------------------------------------
 //  square operation of Fp^4 (for bls509_sqr_forpairing )
 //------------------------------------------------------------
-// void bls509_fp4_sqr(Element c0, Element c1, const Element a0, const Element a1)
+// void bls509_fp12_sqr(Element c0, Element c1, const Element a0, const Element a1)
 // {
 //     Element *t = field(c0)->tmp;
 //
@@ -574,7 +519,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //    output : z = x^t : t = -(2^62+2^55+1)
 //-------------------------------------------------------------------
 //
-// void bls509_fp12_sqr_forpairing_karabina(Element z, const Element x)
+// void bls509_fp24_sqr_forpairing_karabina(Element z, const Element x)
 // {
 //
 //     Element *T = field(z)->base->base->tmp;
@@ -639,7 +584,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     bls509_fp2_add(rep2(rep1(z)), T[6], T[5]);				// c5 = t1+t0
 // }
 //
-// void bls509_fp12_decompose_forpairing_karabina(Element z, const Element x)
+// void bls509_fp24_decompose_forpairing_karabina(Element z, const Element x)
 // {
 //     Element *t = field(z)->base->base->tmp;
 //
@@ -700,7 +645,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //
 // }
 //
-// void bls509_fp12_pow_forpairing_karabina(Element z, const Element x, const int *t, int tlen)
+// void bls509_fp24_pow_forpairing_karabina(Element z, const Element x, const int *t, int tlen)
 // {
 //     int i;
 //
@@ -710,24 +655,24 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //
 //     if (z == x)
 //     {
-//         fprintf(stderr, "error: bad input for bls509_fp12_pow_forpairing\n");
+//         fprintf(stderr, "error: bad input for bls509_fp24_pow_forpairing\n");
 //         exit(200);
 //     }
 //
 //     element_set(z, x);
 //     for (i = 0; i < tlen - 1; i++)
 //     {
-//         bls509_fp12_sqr_forpairing_karabina(z, z);
+//         bls509_fp24_sqr_forpairing_karabina(z, z);
 //         if (i == 55 - 1) {
-//             bls509_fp12_decompose_forpairing_karabina(z55, z);
+//             bls509_fp24_decompose_forpairing_karabina(z55, z);
 //         }
 //     }
-//     bls509_fp12_decompose_forpairing_karabina(z62, z);
+//     bls509_fp24_decompose_forpairing_karabina(z62, z);
 //
-//     bls509_fp12_mul(z, x, z55);
-//     bls509_fp12_mul(z, z, z62);
+//     bls509_fp24_mul(z, x, z55);
+//     bls509_fp24_mul(z, z, z62);
 //
-//     bls509_fp12_conj(z, z);
+//     bls509_fp24_conj(z, z);
 //
 //     element_clear(z55);
 //     element_clear(z62);
@@ -739,7 +684,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //    output : z = x^t : t = 2^62-2^54+2^44
 //-------------------------------------------------------------------
 //
-// void bls509_fp12_sqr_forpairing_beuchat(Element z, const Element x)
+// void bls509_fp24_sqr_forpairing_beuchat(Element z, const Element x)
 // {
 //     Element *t = field(z)->base->base->tmp;
 //     Element *c = field(z)->base->tmp;
@@ -749,9 +694,9 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     // g = g0 + g1*v + g2*v^2
 //     // h = h0 + h1*v + h2*v^2
 //     //------------------------
-//     bls509_fp4_sqr(t[2], t[3], rep0(rep0(x)), rep1(rep1(x)));   //t00, t11 = (g0 + h1*V)^2
-//     bls509_fp4_sqr(t[4], t[5], rep0(rep1(x)), rep2(rep0(x)));   //t01, t12 = (h0 + g2*V)^2
-//     bls509_fp4_sqr(t[6], t[7], rep1(rep0(x)), rep2(rep1(x)));   //t02, t10 = (g1 + h2*V)^2
+//     bls509_fp12_sqr(t[2], t[3], rep0(rep0(x)), rep1(rep1(x)));   //t00, t11 = (g0 + h1*V)^2
+//     bls509_fp12_sqr(t[4], t[5], rep0(rep1(x)), rep2(rep0(x)));   //t01, t12 = (h0 + g2*V)^2
+//     bls509_fp12_sqr(t[6], t[7], rep1(rep0(x)), rep2(rep1(x)));   //t02, t10 = (g1 + h2*V)^2
 //
 //     bls509_fp2_xi_mul(t[7], t[7]);       // t10 = t10*xi
 //
@@ -782,36 +727,36 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     bls509_fp6_set_fp2(c[0], t[2], t[4], t[6]); // c0 = c00 + c01*v + c02*v^2
 //     bls509_fp6_set_fp2(c[1], t[7], t[3], t[5]); // c1 = c10 + c11*v + c12*v^2
 //
-//     bls509_fp12_set_fp6(z, c[0], c[1]);   // z = c0 + c1*w
+//     bls509_fp24_set_fp6(z, c[0], c[1]);   // z = c0 + c1*w
 // }
 //
-// void bls509_fp12_pow_forpairing_beuchat(Element z, const Element x, const int *t, int tlen)
+// void bls509_fp24_pow_forpairing_beuchat(Element z, const Element x, const int *t, int tlen)
 // {
 //     int i;
 //     Element ix;
 //
 //     if (z == x)
 //     {
-//         fprintf(stderr, "error: bad input for bls509_fp12_pow_forpairing\n");
+//         fprintf(stderr, "error: bad input for bls509_fp24_pow_forpairing\n");
 //         exit(200);
 //     }
 //
 //     element_init(ix, field(x));
 //
-//     bls509_fp12_set(z, x);
-//     bls509_fp12_conj(ix, x);
+//     bls509_fp24_set(z, x);
+//     bls509_fp24_conj(ix, x);
 //
 //     for (i = tlen - 2; i >= 0; i--)
 //     {
-//         bls509_fp12_sqr_forpairing_beuchat(z, z);
+//         bls509_fp24_sqr_forpairing_beuchat(z, z);
 //
 //         if (t[i])
 //         {
 //             if (t[i] < 0) {
-//                 bls509_fp12_mul(z, z, ix);
+//                 bls509_fp24_mul(z, z, ix);
 //             }
 //             else {
-//                 bls509_fp12_mul(z, z, x);
+//                 bls509_fp24_mul(z, z, x);
 //             }
 //         }
 //     }
@@ -822,7 +767,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 // //---------------------------------------------------------
 // //  precomputation for Fp12 frobenius
 // //---------------------------------------------------------
-// void bls509_fp12_precomp_frob_aranha(field_precomp_frob_p pf, const Field f)
+// void bls509_fp24_precomp_frob_aranha(field_precomp_frob_p pf, const Field f)
 // {
 //     int i;
 //     mpz_t  t, u;
@@ -892,7 +837,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //     element_clear(tmp2);
 // }
 //
-// void bls509_fp12_precomp_frob_beuchat(field_precomp_frob_p pf, const Field f)
+// void bls509_fp24_precomp_frob_beuchat(field_precomp_frob_p pf, const Field f)
 // {
 //     int i;
 //     mpz_t  t, u;
@@ -962,7 +907,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 // //---------------------------------------------------------
 // // precomputation for Fp12 operation
 // //---------------------------------------------------------
-// void bls509_fp12_precomp(Field f)
+// void bls509_fp24_precomp(Field f)
 // {
 //     field_precomp_p precomp = NULL;
 //
@@ -974,14 +919,14 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //
 //     precomp->pf = (field_precomp_frob_p)malloc(sizeof(struct ec_field_precomp_frob_st));
 //
-//     if (strcmp(f->field_name, "bls509_fp12a") == 0)
+//     if (strcmp(f->field_name, "bls509_fp24a") == 0)
 //     {
-//         bls509_fp12_precomp_frob_beuchat(precomp->pf, f);
+//         bls509_fp24_precomp_frob_beuchat(precomp->pf, f);
 //     }
 //
-//     if (strcmp(f->field_name, "bls509_fp12b") == 0)
+//     if (strcmp(f->field_name, "bls509_fp24b") == 0)
 //     {
-//         bls509_fp12_precomp_frob_aranha(precomp->pf, f);
+//         bls509_fp24_precomp_frob_aranha(precomp->pf, f);
 //     }
 //
 //     f->precomp = (void *)precomp;
@@ -990,7 +935,7 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 // //---------------------------------------------------------
 // // precomputation for Fp12 operation for pairing_init
 // //---------------------------------------------------------
-// void bls509_fp12_precomp_for_pairing_init(Field f)
+// void bls509_fp24_precomp_for_pairing_init(Field f)
 // {
 //     field_precomp_p precomp = NULL;
 //
@@ -1002,14 +947,14 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //
 //     precomp->pf = (field_precomp_frob_p)malloc(sizeof(struct ec_field_precomp_frob_st));
 //
-//     if (strcmp(f->field_name, "bls509_fp12a") == 0)
+//     if (strcmp(f->field_name, "bls509_fp24a") == 0)
 //     {
-//         bls509_fp12_precomp_frob_beuchat(precomp->pf, f);
+//         bls509_fp24_precomp_frob_beuchat(precomp->pf, f);
 //     }
 //
-//     if (strcmp(f->field_name, "bls509_fp12b") == 0)
+//     if (strcmp(f->field_name, "bls509_fp24b") == 0)
 //     {
-//         bls509_fp12_precomp_frob_aranha(precomp->pf, f);
+//         bls509_fp24_precomp_frob_aranha(precomp->pf, f);
 //     }
 //
 //     f->precomp = (void *)precomp;
@@ -1018,13 +963,13 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //-------------------------------------------
 //  comparison operation
 //-------------------------------------------
-int bls509_fp12_is_zero(const Element x)
+int bls509_fp24_is_zero(const Element x)
 {
-    if (bls509_fp4_is_zero(rep2(x)))
+    if (bls509_fp12_is_zero(rep2(x)))
     {
-      if (bls509_fp4_is_zero(rep1(x)))
+      if (bls509_fp12_is_zero(rep1(x)))
       {
-          if (bls509_fp4_is_zero(rep0(x))) {
+          if (bls509_fp12_is_zero(rep0(x))) {
               return TRUE;
           }
       }
@@ -1032,13 +977,13 @@ int bls509_fp12_is_zero(const Element x)
     return FALSE;
 }
 
-int bls509_fp12_is_one(const Element x)
+int bls509_fp24_is_one(const Element x)
 {
-    if (bls509_fp4_is_zero(rep2(x)))
+    if (bls509_fp12_is_zero(rep2(x)))
     {
-      if (bls509_fp4_is_zero(rep1(x)))
+      if (bls509_fp12_is_zero(rep1(x)))
       {
-          if (bls509_fp4_is_one(rep0(x))) {
+          if (bls509_fp12_is_one(rep0(x))) {
               return TRUE;
           }
       }
@@ -1046,13 +991,13 @@ int bls509_fp12_is_one(const Element x)
     return FALSE;
 }
 
-int bls509_fp12_cmp(const Element x, const Element y)
+int bls509_fp24_cmp(const Element x, const Element y)
 {
-    if (bls509_fp4_cmp(rep2(x), rep2(y)) == 0)
+    if (bls509_fp12_cmp(rep2(x), rep2(y)) == 0)
     {
-      if (bls509_fp4_cmp(rep1(x), rep1(y)) == 0)
+      if (bls509_fp12_cmp(rep1(x), rep1(y)) == 0)
       {
-          if (bls509_fp4_cmp(rep0(x), rep0(y)) == 0) {
+          if (bls509_fp12_cmp(rep0(x), rep0(y)) == 0) {
               return 0;
           }
       }
@@ -1060,7 +1005,7 @@ int bls509_fp12_cmp(const Element x, const Element y)
     return 1;
 }
 
-int bls509_fp12_is_sqr(const Element x)
+int bls509_fp24_is_sqr(const Element x)
 {
     int hr = FALSE;
 
@@ -1073,19 +1018,19 @@ int bls509_fp12_is_sqr(const Element x)
     //------------------------------------------
     //  N(x) = x0^3 - beta*x1^3 - (alpha + 1)*x2^3 + 3*beta*x0*x1*x2
     //------------------------------------------
-    bls509_fp4_add(t[6], t[7], t[7]);    // t6 = 2*x1*x2
-    bls509_fp4_add(t[6], t[6], t[7]);    // t6 = 3*x1*x2
-    bls509_fp4_beta_mul(t[6], t[6]);     // t6 = 3*beta*x1*x2
-    bls509_fp4_add(t[6], t[0], t[6]);    // t6 = x0^2 + 3*beta*x1*x2
-    bls509_fp4_mul(t[0], t[6], rep0(x)); // t0 = x0^3 + 3*beta*x0*x1*x2
-    bls509_fp4_mul(t[1], t[1], rep1(x)); // t1 = x1^3
-    bls509_fp4_beta_mul(t[1], t[1]);     // t1 = beta*x1^3
-    bls509_fp4_mul(t[2], t[2], rep2(x)); // t2 = x2^3
-    bls509_fp4_xi_mul(t[2], t[2]);       // t2 = (alpha + 1)*x2^3
-    bls509_fp4_add(t[6], t[1], t[2]);    // t6 = beta*x1^3 + (alpha + 1)*x2^3
-    bls509_fp4_sub(t[1], t[0], t[6]);    // t1 = x0^3 + 3*beta*x0*x1*x2 - beta*x1^3 - (alpha + 1)*x2^3
+    bls509_fp12_add(t[6], t[7], t[7]);    // t6 = 2*x1*x2
+    bls509_fp12_add(t[6], t[6], t[7]);    // t6 = 3*x1*x2
+    bls509_fp12_beta_mul(t[6], t[6]);     // t6 = 3*beta*x1*x2
+    bls509_fp12_add(t[6], t[0], t[6]);    // t6 = x0^2 + 3*beta*x1*x2
+    bls509_fp12_mul(t[0], t[6], rep0(x)); // t0 = x0^3 + 3*beta*x0*x1*x2
+    bls509_fp12_mul(t[1], t[1], rep1(x)); // t1 = x1^3
+    bls509_fp12_beta_mul(t[1], t[1]);     // t1 = beta*x1^3
+    bls509_fp12_mul(t[2], t[2], rep2(x)); // t2 = x2^3
+    bls509_fp12_xi_mul(t[2], t[2]);       // t2 = (alpha + 1)*x2^3
+    bls509_fp12_add(t[6], t[1], t[2]);    // t6 = beta*x1^3 + (alpha + 1)*x2^3
+    bls509_fp12_sub(t[1], t[0], t[6]);    // t1 = x0^3 + 3*beta*x0*x1*x2 - beta*x1^3 - (alpha + 1)*x2^3
 
-    hr = bls509_fp4_is_sqr(t[1]);
+    hr = bls509_fp12_is_sqr(t[1]);
 
     return hr;
 }
@@ -1093,17 +1038,17 @@ int bls509_fp12_is_sqr(const Element x)
 //-------------------------------------------
 //  generate random element
 //-------------------------------------------
-void bls509_fp12_random(Element z)
+void bls509_fp24_random(Element z)
 {
-    bls509_fp4_random(rep0(z));
-    bls509_fp4_random(rep1(z));
-    bls509_fp4_random(rep2(z));
+    bls509_fp12_random(rep0(z));
+    bls509_fp12_random(rep1(z));
+    bls509_fp12_random(rep2(z));
 }
 
 //-------------------------------------------
 //  i/o operation (octet string)
 //-------------------------------------------
-void bls509_fp12_to_mpz(mpz_t a, const Element x)
+void bls509_fp24_to_mpz(mpz_t a, const Element x)
 {
     mpz_mul(a, rep(rep1(rep1(rep2(x)))), field(x)->base->base->base->order);   // a = rep121*p
     mpz_add(a, a, rep(rep0(rep1(rep2(x)))));   // a = a + rep111
@@ -1129,7 +1074,7 @@ void bls509_fp12_to_mpz(mpz_t a, const Element x)
     mpz_add(a, a, rep(rep0(rep0(rep0(x)))));
 }
 
-void bls509_fp12_to_oct(unsigned char *os, size_t *size, const Element x)
+void bls509_fp24_to_oct(unsigned char *os, size_t *size, const Element x)
 {
     size_t s0;
 
@@ -1138,7 +1083,7 @@ void bls509_fp12_to_oct(unsigned char *os, size_t *size, const Element x)
 
     mpz_init(z);
 
-    bls509_fp12_to_mpz(z, x);
+    bls509_fp24_to_mpz(z, x);
     mpz_export(b0, &s0, 1, sizeof(*b0), 1, 0, z);
 
     memset(os, 0x00, 768);
@@ -1150,7 +1095,7 @@ void bls509_fp12_to_oct(unsigned char *os, size_t *size, const Element x)
     mpz_clear(z);
 }
 
-void bls509_fp12_from_oct(Element x, const unsigned char *os, const size_t size)
+void bls509_fp24_from_oct(Element x, const unsigned char *os, const size_t size)
 {
     mpz_t quo, rem;
 

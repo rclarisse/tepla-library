@@ -176,7 +176,7 @@ void bls509_fp4_mul(Element z, const Element x, const Element y)
     bls509_fp2_mul(t[6], t[5], t[4]);       // t6 = t4*t5 = (x0 + x1)(y0 + y1)
 
     bls509_fp2_sub(rep0(z), t[0], t[2]); // z0 = t0 - t2
-    bls509_fp2_sub(rep1(z), t[6], t[3]);    // z1 = t5 - t2
+    bls509_fp2_sub(rep1(z), t[6], t[3]); // z1 = t6 - t3
 
 }
 

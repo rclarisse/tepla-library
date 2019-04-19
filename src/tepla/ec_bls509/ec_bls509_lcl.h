@@ -266,6 +266,9 @@ void bls509_fp12_sub(Element z, const Element x, const Element y);
 void bls509_fp12_mul(Element z, const Element x, const Element y);
 void bls509_fp12_mul_L(Element z, Element x0, Element x1, Element x2);
 void bls509_fp12_mul_L2(Element z, Element x0, Element x1, Element x2);
+void bls509_fp12_gamma_mul(Element z, const Element x)
+void bls509_fp12_beta_mul(Element z, const Element x)
+void bls509_fp12_xi_mul(Element z, const Element x)
 void bls509_fp12_sqr(Element z, const Element x);
 int  bls509_fp12_sqrt(Element z, const Element x);
 void bls509_fp12_inv(Element z, const Element x);
