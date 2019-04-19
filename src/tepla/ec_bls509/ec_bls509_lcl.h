@@ -219,6 +219,7 @@ void bls509_fp4_subn(Element z, const Element x, const Element y);
 void bls509_fp4_mul(Element z, const Element x, const Element y);
 void bls509_fp4_muln(Element z, const Element x, const Element y);
 void bls509_fp4_beta_mul(Element z, const Element x);
+void bls509_fp4_xi_mul(Element z, const Element x);
 
 void bls509_fp4_mul_fp2(Element z, const Element x, const Element y);
 void bls509_fp4_mul_fp2_2(Element z, const Element y, const Element x1, const Element x2);
@@ -246,51 +247,51 @@ void bls509_fp4_random(Element z);
 void bls509_fp4_to_oct(unsigned char *os, size_t *size, const Element x);
 void bls509_fp4_from_oct(Element z, const unsigned char *os, const size_t size);
 
-// //----------------------------------------------
-// // declaration function of field bls509_fp12
-// //----------------------------------------------
-// void bls509_fp12_init(Element x);
-// void bls509_fp12_clear(Element x);
-// void bls509_fp12_set(Element x, const Element y);
-// void bls509_fp12_set_fp6(Element z, const Element x, const Element y);
-// void bls509_fp12_set_str(Element x, const char *s);
-// void bls509_fp12_get_str(char *s, const Element x);
-// void bls509_fp12_set_zero(Element x);
-// void bls509_fp12_set_one(Element x);
-// void bls509_fp12_add(Element z, const Element x, const Element y);
-// void bls509_fp12_dob(Element z, const Element x);
-// void bls509_fp12_tri(Element z, const Element x);
-// void bls509_fp12_neg(Element z, const Element x);
-// void bls509_fp12_sub(Element z, const Element x, const Element y);
-// void bls509_fp12_mul(Element z, const Element x, const Element y);
-// void bls509_fp12_mul_L(Element z, Element x0, Element x1, Element x2);
-// void bls509_fp12_mul_L2(Element z, Element x0, Element x1, Element x2);
-// void bls509_fp12_sqr(Element z, const Element x);
-// int  bls509_fp12_sqrt(Element z, const Element x);
-// void bls509_fp12_inv(Element z, const Element x);
-// void bls509_fp12_pow(Element z, const Element x, const mpz_t exp);
-// void bls509_fp12_pow_naf(Element z, const Element x, const mpz_t exp);
-// void bls509_fp12_frob_p(Element z, const Element x);
-// void bls509_fp12_frob_p2(Element z, const Element x);
-// void bls509_fp12_frob_p3(Element z, const Element x);
-// void bls509_fp12_conj(Element z, const Element x);
-// void bls509_fp12_pow_forpairing(Element z, const Element x, const int *t, int tlen);
-// void bls509_fp12_sqr_forpairing_karabina(Element z, const Element x);
-// void bls509_fp12_pow_forpairing_karabina(Element z, const Element x, const int *t, int tlen);
-// void bls509_fp12_decompose_forpairing_karabina(Element z, const Element x);
-// void bls509_fp12_sqr_forpairing_beuchat(Element z, const Element x);
-// void bls509_fp12_pow_forpairing_beuchat(Element z, const Element x, const int *t, int tlen);
-//
-// int  bls509_fp12_is_zero(const Element x);
-// int  bls509_fp12_is_one(const Element x);
-// int  bls509_fp12_is_sqr(const Element x);
-// int  bls509_fp12_cmp(const Element x, const Element y);
-// void bls509_fp12_precomp(Field f);
-// void bls509_fp12_precomp_for_pairing_init(Field f);
-// void bls509_fp12_random(Element z);
-// void bls509_fp12_to_oct(unsigned char *os, size_t *size, const Element x);
-// void bls509_fp12_from_oct(Element z, const unsigned char *os, const size_t size);
-//
+//----------------------------------------------
+// declaration function of field bls509_fp12
+//----------------------------------------------
+void bls509_fp12_init(Element x);
+void bls509_fp12_clear(Element x);
+void bls509_fp12_set(Element x, const Element y);
+void bls509_fp12_set_fp6(Element z, const Element x, const Element y);
+void bls509_fp12_set_str(Element x, const char *s);
+void bls509_fp12_get_str(char *s, const Element x);
+void bls509_fp12_set_zero(Element x);
+void bls509_fp12_set_one(Element x);
+void bls509_fp12_add(Element z, const Element x, const Element y);
+void bls509_fp12_dob(Element z, const Element x);
+void bls509_fp12_tri(Element z, const Element x);
+void bls509_fp12_neg(Element z, const Element x);
+void bls509_fp12_sub(Element z, const Element x, const Element y);
+void bls509_fp12_mul(Element z, const Element x, const Element y);
+void bls509_fp12_mul_L(Element z, Element x0, Element x1, Element x2);
+void bls509_fp12_mul_L2(Element z, Element x0, Element x1, Element x2);
+void bls509_fp12_sqr(Element z, const Element x);
+int  bls509_fp12_sqrt(Element z, const Element x);
+void bls509_fp12_inv(Element z, const Element x);
+void bls509_fp12_pow(Element z, const Element x, const mpz_t exp);
+void bls509_fp12_pow_naf(Element z, const Element x, const mpz_t exp);
+void bls509_fp12_frob_p(Element z, const Element x);
+void bls509_fp12_frob_p2(Element z, const Element x);
+void bls509_fp12_frob_p3(Element z, const Element x);
+void bls509_fp12_conj(Element z, const Element x);
+void bls509_fp12_pow_forpairing(Element z, const Element x, const int *t, int tlen);
+void bls509_fp12_sqr_forpairing_karabina(Element z, const Element x);
+void bls509_fp12_pow_forpairing_karabina(Element z, const Element x, const int *t, int tlen);
+void bls509_fp12_decompose_forpairing_karabina(Element z, const Element x);
+void bls509_fp12_sqr_forpairing_beuchat(Element z, const Element x);
+void bls509_fp12_pow_forpairing_beuchat(Element z, const Element x, const int *t, int tlen);
+
+int  bls509_fp12_is_zero(const Element x);
+int  bls509_fp12_is_one(const Element x);
+int  bls509_fp12_is_sqr(const Element x);
+int  bls509_fp12_cmp(const Element x, const Element y);
+void bls509_fp12_precomp(Field f);
+void bls509_fp12_precomp_for_pairing_init(Field f);
+void bls509_fp12_random(Element z);
+void bls509_fp12_to_oct(unsigned char *os, size_t *size, const Element x);
+void bls509_fp12_from_oct(Element z, const unsigned char *os, const size_t size);
+
 // //----------------------------------------------
 // // declaration function of field bls509_fp24
 // //----------------------------------------------

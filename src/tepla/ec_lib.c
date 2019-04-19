@@ -126,6 +126,11 @@ void field_init(Field f, const char *param)
       f->field_init  = ec_bls509_fp4_new;
       f->field_clear  = ec_bls509_field_clear;
     }
+    else if (strcmp(param, "bls509_fp12") == 0)
+    {
+      f->field_init  = ec_bls509_fp12_new;
+      f->field_clear  = ec_bls509_field_clear;
+    }
 
     else
     {

@@ -242,6 +242,16 @@ void bls509_fp4_beta_mul(Element z, const Element x)
     bls509_fp2_neg(rep0(z), t[0]);
 }
 
+void bls509_fp4_xi_mul(Element z, const Element x)
+{
+    Element *t = field(z)->base->tmp;
+
+    bls509_fp2_xi_mul(t[0], rep0(x));
+    bls509_fp2_xi_mul(t[1], rep1(x));
+    bls509_fp2_set(rep0(z), t[0]);
+    bls509_fp2_set(rep1(z), t[1]);
+}
+
 //--------------------------------------------------------
 //   z = x * (y, 0)
 //--------------------------------------------------------
