@@ -548,73 +548,73 @@ void ec_bls509_fp4_new(Field f)
 //----------------------------------------------
 //  function generating elliptic curve method
 //----------------------------------------------
-// void ec_bls509_fp_method_new(EC_METHOD method)
-// {
-//     method->point_init  = ec_bls509_fp_point_init;
-//     method->point_clear = ec_bls509_fp_point_clear;
-//     method->point_set = ec_bls509_fp_point_set;
-//     method->point_set_infinity = ec_bls509_fp_point_set_infinity;
-//     method->point_set_str = ec_bls509_fp_point_set_str;
-//     method->point_get_str = ec_bls509_fp_point_get_str;
-//
-//     method->add = ec_bls509_fp_add;
-//     method->dob = ec_bls509_fp_dob;
-//     method->neg = ec_bls509_fp_neg;
-//     method->sub = ec_bls509_fp_sub;
-//
+void ec_bls509_fp_method_new(EC_METHOD method)
+{
+    method->point_init  = ec_bls509_fp_point_init;
+    method->point_clear = ec_bls509_fp_point_clear;
+    method->point_set = ec_bls509_fp_point_set;
+    method->point_set_infinity = ec_bls509_fp_point_set_infinity;
+    method->point_set_str = ec_bls509_fp_point_set_str;
+    method->point_get_str = ec_bls509_fp_point_get_str;
+
+    method->add = ec_bls509_fp_add;
+    method->dob = ec_bls509_fp_dob;
+    method->neg = ec_bls509_fp_neg;
+    method->sub = ec_bls509_fp_sub;
+
 // #ifdef ENABLE_FASTALG
-//     method->mul = ec_bls509_fp_mul_end;
+    method->mul = ec_bls509_fp_mul_affine;//_end;
 // #else
-//     method->mul = ec_bls509_fp_mul_naf;
+    // method->mul = ec_bls509_fp_mul_naf;
 // #endif
-//
-//     method->is_infinity = ec_bls509_fp_is_infinity;
-//     method->is_on_curve = ec_bls509_fp_is_on_curve;
-//     method->cmp = ec_bls509_fp_cmp;
-//
-//     method->make_affine = ec_bls509_fp_make_affine;
-//     method->map_to_point = ec_bls509_fp_map_to_point;
-//     method->random = ec_bls509_fp_random;
-//     method->to_oct = ec_bls509_fp_to_oct;
-//     method->from_oct = ec_bls509_fp_from_oct;
-// }
+
+    method->is_infinity = ec_bls509_fp_is_infinity;
+    method->is_on_curve = ec_bls509_fp_is_on_curve;
+    method->cmp = ec_bls509_fp_cmp;
+
+    method->make_affine = ec_bls509_fp_make_affine;
+    method->map_to_point = NULL;//ec_bls509_fp_map_to_point;
+    method->random = ec_bls509_fp_random;
+    method->to_oct = ec_bls509_fp_to_oct;
+    method->from_oct = ec_bls509_fp_from_oct;
+}
 
 
 //----------------------------------------------
 //  function generating elliptic curve group
 //----------------------------------------------
-// void ec_bls509_fp_group_new(EC_GROUP ec)
-// {
-//     ec->type = Curve_BLS;
-//
-//     set_curve_name(ec, "ec_bls509_fp");
-//
-//     ec->ID = ec_bls509_fp;
-//
-//     ec->str_len = 132;
-//     ec->oct_len = 65;
-//
-//     ec->field = (struct ec_field_st *)malloc(sizeof(struct ec_field_st));
-//     field_init(ec->field, "bls509_fp");
-//
-//     ec->method = (struct ec_method_st *)malloc(sizeof(struct ec_method_st));
-//     ec_bls509_fp_method_new(ec->method);
-//
-//     point_init(ec->generator, ec);
-//     point_set_str(ec->generator, "[1,d45589b158faaf6ab0e4ad38d998e9982e7ff63964ee1460342a592677cccb0]");
-//
-//     element_init(ec->a, ec->field);
-//     element_init(ec->b, ec->field);
-//
-//     element_set_zero(ec->a);
-//     element_set_str(ec->b, "5");
-//
-//     mpz_init_set_str(ec->order, "2370FB049D410FBE4E761A9886E502411DC1AF70120000017E80600000000001", 16);
-//     mpz_init_set_str(ec->trace, "5F408FD0060000000000000000000001", 16);
-//     mpz_init_set_str(ec->cofactor, "1", 16);
-//
-//     ec_bls509_fp_init_ec_data(ec);
-// }
+void ec_bls509_fp_group_new(EC_GROUP ec)
+{
+    ec->type = Curve_BLS;
+
+    set_curve_name(ec, "ec_bls509_fp");
+
+    ec->ID = ec_bls509_fp;
+
+    ec->str_len = 264;
+    ec->oct_len = 130;
+
+    ec->field = (struct ec_field_st *)malloc(sizeof(struct ec_field_st));
+    field_init(ec->field, "bls509_fp");
+
+    ec->method = (struct ec_method_st *)malloc(sizeof(struct ec_method_st));
+    ec_bls509_fp_method_new(ec->method);
+
+    point_init(ec->generator, ec);
+    point_set_str(ec->generator, "[3,5EAC62FA6C7E9B2ACBD59D9F575D737CA5A3DE5DDE60CEFD5A5662BA795C986C33F78F653E892C6840044B81DA165D675B9AD4849EF6FA65B4B9E2D6F5C7230]");
+
+    element_init(ec->a, ec->field);
+    element_init(ec->b, ec->field);
+
+    element_set_zero(ec->a);
+    element_set_one(ec->b);
+
+    mpz_init_set_str(ec->order, "155556FFFF39CA9BFCEDF2B4F9C0ECF6CB8AC8495D187E8C32EA0103E01090BB626E85BF7C18A0F0CFCB5C6071BAD3D2EE63BD076E8D9300A145118DC8BFCAAC", 16);
+    mpz_init_set_str(ec->trace, "-800000FFFF800", 16);
+    mpz_init_set_str(ec->cofactor, "155555AAAA805FFFAAC0154AAC", 16);
+
+    // ec_bls509_fp_init_ec_data(ec);
+}
 
 //----------------------------------------------
 //  function generating elliptic curve method
@@ -689,36 +689,36 @@ void ec_bls509_fp4_new(Field f)
 //----------------------------------------------
 //  clear curve group : ec_bls509
 //----------------------------------------------
-// void ec_bls509_group_clear(EC_GROUP ec)
-// {
-//     point_clear(ec->generator);
-//
-//     element_clear(ec->a);
-//     element_clear(ec->b);
-//
-//     mpz_clear(ec->order);
-//     mpz_clear(ec->trace);
-//     mpz_clear(ec->cofactor);
-//
-//     if (ec->ID == ec_bls509_fp)
-//     {
-//         ec_bls509_fp_clear_ec_data(ec);
-//     }
-//     else if (ec->ID == ec_bls509_fp4)
-//     {
-//         ec_bls509_fp4_clear_ec_data(ec);
-//     }
-//
-//     SAFE_FREE(ec->method);
-//
-//     field_clear(ec->field);
-//     SAFE_FREE(ec->field);
-//
-//     SAFE_FREE(ec->curve_name);
-//
-//     ec->str_len = 0;
-//     ec->oct_len = 0;
-// }
+void ec_bls509_group_clear(EC_GROUP ec)
+{
+    point_clear(ec->generator);
+
+    element_clear(ec->a);
+    element_clear(ec->b);
+
+    mpz_clear(ec->order);
+    mpz_clear(ec->trace);
+    mpz_clear(ec->cofactor);
+
+    if (ec->ID == ec_bls509_fp)
+    {
+        ec_bls509_fp_clear_ec_data(ec);
+    }
+    // else if (ec->ID == ec_bls509_fp4)
+    // {
+    //     ec_bls509_fp4_clear_ec_data(ec);
+    // }
+
+    SAFE_FREE(ec->method);
+
+    field_clear(ec->field);
+    SAFE_FREE(ec->field);
+
+    SAFE_FREE(ec->curve_name);
+
+    ec->str_len = 0;
+    ec->oct_len = 0;
+}
 
 //-------------------------------------------
 // pairing group : Init, Clear

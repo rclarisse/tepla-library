@@ -335,42 +335,41 @@ void bls509_fp4_from_oct(Element z, const unsigned char *os, const size_t size);
 // void bls509_fp24_random(Element z);
 // void bls509_fp24_to_oct(unsigned char *os, size_t *size, const Element x);
 // void bls509_fp24_from_oct(Element z, const unsigned char *os, const size_t size);
-//
-//
-// //----------------------------------------------
-// // declaration function of elliptic curve
-// //----------------------------------------------
-// void ec_bls509_fp_point_init(EC_POINT p);
-// void ec_bls509_fp_point_clear(EC_POINT p);
-// void ec_bls509_fp_point_set(EC_POINT z, const EC_POINT x);
-// void ec_bls509_fp_point_set_str(EC_POINT z, const char* s);
-// void ec_bls509_fp_point_set_infinity(EC_POINT z);
-// void ec_bls509_fp_point_get_str(char *s, const EC_POINT z);
-// void ec_bls509_fp_add(EC_POINT z, const EC_POINT x, const EC_POINT y);
-// void ec_bls509_fp_dob(EC_POINT z, const EC_POINT x);
-// void ec_bls509_fp_add_formul(EC_POINT z, const EC_POINT x, const EC_POINT y);
-// void ec_bls509_fp_dob_formul(EC_POINT z, const EC_POINT x);
-// void ec_bls509_fp_neg(EC_POINT z, const EC_POINT x);
-// void ec_bls509_fp_sub(EC_POINT z, const EC_POINT x, const EC_POINT y);
-// void ec_bls509_fp_mul_affine(EC_POINT z, const mpz_t s, const EC_POINT x);
-// void ec_bls509_fp_mul(EC_POINT z, const mpz_t s, const EC_POINT x);
-// void ec_bls509_fp_mul_naf(EC_POINT z, const mpz_t s, const EC_POINT x);
-// void ec_bls509_fp_mul_end(EC_POINT z, const mpz_t s, const EC_POINT x);
-// int  ec_bls509_fp_is_infinity(const EC_POINT P);
-// int  ec_bls509_fp_is_on_curve(const EC_POINT P);
-// int  ec_bls509_fp_cmp(const EC_POINT x, const EC_POINT y);
-// void ec_bls509_fp_make_affine(EC_POINT z, const EC_POINT x);
-// void ec_bls509_fp_map_to_point(EC_POINT z, const char *s, size_t slen, int t);
-// void ec_bls509_fp_point_endomorphism(EC_POINT Q, const EC_POINT P);
-// void ec_bls509_fp_random(EC_POINT z);
-// void ec_bls509_fp_to_oct(unsigned char *os, size_t *size, const EC_POINT z);
-// void ec_bls509_fp_from_oct(EC_POINT z, const unsigned char *os, size_t size);
-// void generate_naf(int *naf, int *len, const mpz_t s);
-// void cat_int_str(unsigned char *os, size_t *oslen, const mpz_t i, const unsigned char *s, const size_t slen);
-// void ec_bls509_fp_decompose_scalar_init(mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, const mpz_t n, const mpz_t l);
-// void ec_bls509_fp_init_ec_data(EC_GROUP ec);
-// void ec_bls509_fp_clear_ec_data(EC_GROUP ec);
-//
+
+
+//----------------------------------------------
+// declaration function of elliptic curve
+//----------------------------------------------
+void ec_bls509_fp_point_init(EC_POINT p);
+void ec_bls509_fp_point_clear(EC_POINT p);
+void ec_bls509_fp_point_set(EC_POINT z, const EC_POINT x);
+void ec_bls509_fp_point_set_str(EC_POINT z, const char* s);
+void ec_bls509_fp_point_set_infinity(EC_POINT z);
+void ec_bls509_fp_point_get_str(char *s, const EC_POINT z);
+void ec_bls509_fp_add(EC_POINT z, const EC_POINT x, const EC_POINT y);
+void ec_bls509_fp_dob(EC_POINT z, const EC_POINT x);
+void ec_bls509_fp_add_formul(EC_POINT z, const EC_POINT x, const EC_POINT y);
+void ec_bls509_fp_dob_formul(EC_POINT z, const EC_POINT x);
+void ec_bls509_fp_neg(EC_POINT z, const EC_POINT x);
+void ec_bls509_fp_sub(EC_POINT z, const EC_POINT x, const EC_POINT y);
+void ec_bls509_fp_mul_affine(EC_POINT z, const mpz_t s, const EC_POINT x);
+void ec_bls509_fp_mul(EC_POINT z, const mpz_t s, const EC_POINT x);
+void ec_bls509_fp_mul_naf(EC_POINT z, const mpz_t s, const EC_POINT x);
+void ec_bls509_fp_mul_end(EC_POINT z, const mpz_t s, const EC_POINT x);
+int  ec_bls509_fp_is_infinity(const EC_POINT P);
+int  ec_bls509_fp_is_on_curve(const EC_POINT P);
+int  ec_bls509_fp_cmp(const EC_POINT x, const EC_POINT y);
+void ec_bls509_fp_make_affine(EC_POINT z, const EC_POINT x);
+void ec_bls509_fp_map_to_point(EC_POINT z, const char *s, size_t slen, int t);
+void ec_bls509_fp_point_endomorphism(EC_POINT Q, const EC_POINT P);
+void ec_bls509_fp_random(EC_POINT z);
+void ec_bls509_fp_to_oct(unsigned char *os, size_t *size, const EC_POINT z);
+void ec_bls509_fp_from_oct(EC_POINT z, const unsigned char *os, size_t size);
+void cat_int_str(unsigned char *os, size_t *oslen, const mpz_t i, const unsigned char *s, const size_t slen);
+void ec_bls509_fp_decompose_scalar_init(mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, const mpz_t n, const mpz_t l);
+void ec_bls509_fp_init_ec_data(EC_GROUP ec);
+void ec_bls509_fp_clear_ec_data(EC_GROUP ec);
+
 // //----------------------------------------------
 // // declaration function of elliptic curve
 // //----------------------------------------------
