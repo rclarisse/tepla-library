@@ -200,8 +200,8 @@ void ec_bls509_fp_dob(EC_POINT R, const EC_POINT P)
         return;
     }
 
-    bls509_fp_add(t[0], ycoord(P), ycoord(P)); // t0 = 2*yP
-    bls509_fp_inv(t[0], t[0]);                 // t0 = 1/(2*yP)
+    bls509_fp_add(t[3], ycoord(P), ycoord(P)); // t3 = 2*yP
+    bls509_fp_inv(t[0], t[3]);                 // t0 = 1/(2*yP)
     bls509_fp_sqr(t[1], xcoord(P));            // t1 = xP^2
     bls509_fp_add(t[2], t[1], t[1]);
     bls509_fp_add(t[1], t[1], t[2]);           // t1 = 3*xP^2
