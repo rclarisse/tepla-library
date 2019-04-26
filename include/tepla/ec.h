@@ -131,6 +131,10 @@ typedef struct ec_pairing_st
 
 } EC_PAIRING[1];
 
+
+void generate_naf(int *naf, int *len, const mpz_t s);
+
+
 //-----------------------------------------------------
 // utility for set field/curve name
 //-----------------------------------------------------

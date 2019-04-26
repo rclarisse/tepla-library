@@ -16,7 +16,7 @@ TESTFP = test_bls509_fp.exe
 TESTFP2 = test_bls509_fp2.exe
 TESTFP4 = test_bls509_fp4.exe
 TESTFP12 = test_bls509_fp12.exe
-# TESTEFP = test_ec_bn254_fp.exe
+TESTEFP = test_ec_bls509_fp.exe
 # TESTETW = test_ec_bn254_tw.exe
 # TESTPRG = test_ec_bn254_pairing.exe
 
@@ -24,7 +24,7 @@ TESTS  = $(TESTFP)
 TESTS += $(TESTFP2)
 TESTS += $(TESTFP4)
 TESTS += $(TESTFP12)
-# TESTS += $(TESTEFP)
+TESTS += $(TESTEFP)
 # TESTS += $(TESTETW)
 # TESTS += $(TESTPRG)
 
@@ -33,7 +33,7 @@ OBJS2  = bls509_fp.o
 OBJS2 += bls509_fp2.o
 OBJS2 += bls509_fp4.o
 OBJS2 += bls509_fp12.o
-# OBJS2 += ec_bn254_fp.o
+OBJS2 += ec_bls509_fp.o
 # OBJS2 += ec_bn254_fp4.o
 # OBJS2 += ec_bn254_pairing.o
 OBJS2 += ec_bls509_lib.o
@@ -56,7 +56,7 @@ check:
 	$(TESTFP2:%=./%;)
 	$(TESTFP4:%=./%;)
 	$(TESTFP12:%=./%;)
-	# $(TESTEFP:%=./%;)
+	$(TESTEFP:%=./%;)
 	# $(TESTETW:%=./%;)
 	# $(TESTPRG:%=./%;)
 

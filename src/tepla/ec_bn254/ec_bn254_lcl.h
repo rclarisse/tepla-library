@@ -334,7 +334,7 @@ void ec_bn254_fp_point_endomorphism(EC_POINT Q, const EC_POINT P);
 void ec_bn254_fp_random(EC_POINT z);
 void ec_bn254_fp_to_oct(unsigned char *os, size_t *size, const EC_POINT z);
 void ec_bn254_fp_from_oct(EC_POINT z, const unsigned char *os, size_t size);
-void generate_naf(int *naf, int *len, const mpz_t s);
+// void generate_naf(int *naf, int *len, const mpz_t s);
 void cat_int_str(unsigned char *os, size_t *oslen, const mpz_t i, const unsigned char *s, const size_t slen);
 void ec_bn254_fp_decompose_scalar_init(mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, const mpz_t n, const mpz_t l);
 void ec_bn254_fp_init_ec_data(EC_GROUP ec);

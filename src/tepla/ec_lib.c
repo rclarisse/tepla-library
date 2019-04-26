@@ -31,6 +31,46 @@
 #define Field(x)  (x->field)
 #define Curve(p)  (p->ec->method)
 
+//--------------------------------------------------------------
+//  Generate NAF representation of s
+//--------------------------------------------------------------
+void generate_naf(int *naf, int *len, const mpz_t s)
+{
+    mpz_t k, r;
+
+    int i = 0;
+
+    mpz_init(k);
+    mpz_init(r);
+
+    mpz_abs(k, s);
+
+    while (mpz_cmp_ui(k, 1) >= 0)
+    {
+        if (mpz_tstbit(k, 0))
+        {
+            int v = 2 - (int)mpz_mod_ui(r, k, 4);
+            if (v > 0) {
+                mpz_sub_ui(k, k, v);
+            }
+            if (v < 0) {
+                mpz_add_ui(k, k, -v);
+            }
+            naf[i] = v;
+        }
+        else {
+            naf[i] = 0;
+        }
+        mpz_fdiv_q_2exp(k, k, 1);
+        i++;
+    }
+
+    (*len) = i;
+
+    mpz_clear(k);
+    mpz_clear(r);
+}
+
 //-----------------------------------------------------
 // utility for set field/curve name
 //-----------------------------------------------------
@@ -332,6 +372,11 @@ void curve_init(EC_GROUP ec, const char *param)
     {
         ec->curve_init = ec_bn254_twb_group_new;
         ec->curve_clear = ec_bn254_group_clear;
+    }
+    else if (strcmp(param, "ec_bls509_fp") == 0)
+    {
+        ec->curve_init = ec_bls509_fp_group_new;
+        ec->curve_clear = ec_bls509_group_clear;
     }
     else
     {
