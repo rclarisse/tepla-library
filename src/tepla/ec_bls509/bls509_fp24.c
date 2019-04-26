@@ -50,10 +50,10 @@ void bls509_fp24_set(Element x, const Element y)
     bls509_fp12_set(rep1(x), rep1(y));
 }
 
-void bls509_fp24_set_fp4(Element z, const Element w, const Element x, const Element y)
+void bls509_fp24_set_fp12(Element z, const Element x, const Element y)
 {
-    bls509_fp12_set(rep0(z), w);
-    bls509_fp12_set(rep1(z), x);
+    bls509_fp12_set(rep0(z), x);
+    bls509_fp12_set(rep1(z), y);
 }
 
 void bls509_fp24_set_str(Element x, const char *s)
@@ -134,14 +134,14 @@ void bls509_fp24_set_str(Element x, const char *s)
     bls509_fp_set_str(rep1(rep1(rep1(rep1(x)))), ++c[18]);
     bls509_fp_set_str(rep0(rep0(rep2(rep1(x)))), ++c[19]);
     bls509_fp_set_str(rep1(rep0(rep2(rep1(x)))), ++c[20]);
-    bls509_fp_set_str(rep1(rep1(rep2(rep1(x)))), ++c[21]);
+    bls509_fp_set_str(rep0(rep1(rep2(rep1(x)))), ++c[21]);
     bls509_fp_set_str(rep1(rep1(rep2(rep1(x)))), ++c[22]);
 }
 
 void bls509_fp24_get_str(char *s, const Element x)
 {
     char s0[130], s1[130], s2[130], s3[130], s4[130], s5[130], s6[130], s7[130], s8[130], s9[130], s10[130], s11[130];
-    char s12[130], s13[130], s13[130], s14[130], s15[130], s16[130], s17[130], s18[130], s19[130], s20[130], s21[130];
+    char s12[130], s13[130], s14[130], s15[130], s16[130], s17[130], s18[130], s19[130], s20[130], s21[130];
     char s22[130], s23[130];
 
     bls509_fp_get_str(s0,  rep0(rep0(rep0(rep0(x)))));
@@ -167,9 +167,9 @@ void bls509_fp24_get_str(char *s, const Element x)
     bls509_fp_get_str(s20, rep0(rep0(rep2(rep1(x)))));
     bls509_fp_get_str(s21, rep1(rep0(rep2(rep1(x)))));
     bls509_fp_get_str(s22, rep0(rep1(rep2(rep1(x)))));
-    bls509_fp_get_str(s23, rep1(rep1(rep2(rep1(x)))));
+    bls509_fp_get_str(s23, rep1(rep1(rep2(rep1(x)))));
 
-    sprintf(s, "%s %s %s %s %s %s %s %s %s %s %s %s", s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11);
+    sprintf(s, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s", s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21, s22, s23);
 }
 
 void bls509_fp24_set_zero(Element x)
@@ -209,8 +209,8 @@ void bls509_fp24_mul(Element z, const Element x, const Element y)
 {
     Element *t = field(z)->base->tmp;
 
-    bls509_fp2_mul(t[0], rep0(x), rep0(y));  // t0 = x0*y0
-    bls509_fp2_mul(t[1], rep1(x), rep1(y));  // t1 = x1*y1
+    bls509_fp12_mul(t[0], rep0(x), rep0(y));  // t0 = x0*y0
+    bls509_fp12_mul(t[1], rep1(x), rep1(y));  // t1 = x1*y1
 
     bls509_fp12_add(t[2], rep0(x), rep1(x)); // t2 = x0 + x1
     bls509_fp12_add(t[3], rep0(y), rep1(y)); // t3 = y0 + y1
@@ -219,14 +219,14 @@ void bls509_fp24_mul(Element z, const Element x, const Element y)
     //  z0 = x0*y0 - x1*y1*gamma
     //------------------------------------------
     bls509_fp12_gamma_mul(t[4], t[1]);   // t4 = x1*y1*gamma
-    bls509_fp2_sub(rep0(z), t[0], t[4]); // z0 = x0*y0 - x1*y1*gamma
+    bls509_fp12_sub(rep0(z), t[0], t[4]); // z0 = x0*y0 - x1*y1*gamma
 
     //------------------------------------------
     //  z1 = x0*y1 + x1*y0
     //------------------------------------------
     bls509_fp12_add(t[4], t[0], t[1]);   // t4 = t0 + t1 = x0*y0 + x1*y1
     bls509_fp12_mul(t[5], t[2], t[3]);   // t5 = t2*t3 = (x0 + x1)*(y0 + y1)
-    bls509_fp2_sub(rep1(z), t[5], t[4]); // z1 = t5 - t4
+    bls509_fp12_sub(rep1(z), t[5], t[4]); // z1 = t5 - t4
 }
 
 //----------------------------------------------------------
@@ -294,7 +294,6 @@ void bls509_fp24_tri(Element z, const Element x)
 {
     bls509_fp12_tri(rep0(z), rep0(x));
     bls509_fp12_tri(rep1(z), rep1(x));
-    bls509_fp12_tri(rep2(z), rep2(x));
 }
 
 void bls509_fp24_sqr(Element z, const Element x)
@@ -303,31 +302,19 @@ void bls509_fp24_sqr(Element z, const Element x)
 
     bls509_fp12_sqr(t[0], rep0(x)); // t0 = x0^2
     bls509_fp12_sqr(t[1], rep1(x)); // t1 = x1^2
-    bls509_fp12_sqr(t[2], rep2(x)); // t2 = x2^2
 
-    bls509_fp12_mul(t[3], rep0(x), rep1(x)); // t3 = x0*x1
-    bls509_fp12_mul(t[4], rep0(x), rep2(x)); // t4 = x0*x2
-    bls509_fp12_mul(t[5], rep1(x), rep2(x)); // t5 = x1*x2
+    bls509_fp12_mul(t[2], rep0(x), rep1(x)); // t2 = x0*x1
 
     //------------------------------------------
-    //  z0 = x0^2 - 2*beta*x1*x2
+    //  z0 = x0^2 - gamma*x1^2
     //------------------------------------------
-    bls509_fp12_beta_mul(t[6], t[5]);
-    bls509_fp12_dob(t[5], t[6]);          // t5 = 2*beta*x1*x2
-    bls509_fp12_sub(rep0(z), t[0], t[5]); // z0 = x0^2 - 2*beta*x1*x2
+    bls509_fp12_gamma_mul(t[3], t[1]);
+    bls509_fp12_sub(rep0(z), t[0], t[3]);
 
     //------------------------------------------
-    //  z1 = 2*x0*x1 - beta*x2^2
+    //  z1 = 2*x0*x1
     //------------------------------------------
-    bls509_fp12_dob(t[3], t[3]);          // t3 = 2*x0*x1
-    bls509_fp12_beta_mul(t[6], t[2]);     // t2 = beta*x2^2
-    bls509_fp12_sub(rep1(z), t[3], t[6]); // z1 = 2*x0*x1 - beta*x2^2
-
-    //------------------------------------------
-    //  z2 = 2*x0*x2 + x1^2
-    //------------------------------------------
-    bls509_fp12_dob(t[4], t[4]);          // t4 = 2*x0*x2
-    bls509_fp12_add(rep2(z), t[4], t[1]); // z2 = 2*x0*x2 + x1^2
+    bls509_fp12_dob(rep1(z), t[2]);
 }
 
 //-----------------------------------------------------------
@@ -358,45 +345,45 @@ void bls509_fp24_pow(Element z, const Element x, const mpz_t exp)
 //-----------------------------------------------------------
 //  exponentiation z = x^exp with NAF
 //-----------------------------------------------------------
-// void bls509_fp24_pow_naf(Element z, const Element x, const mpz_t exp)
-// {
-//     long t, i;
-//     Element c, ix;
-//
-//     int *naf, nlen;
-//
-//     element_init(c, field(z));
-//     element_init(ix, field(z));
-//
-//     element_set(c, x);
-//     element_inv(ix, x);
-//
-//     t = mpz_sizeinbase(exp, 2);
-//
-//     naf = (int *)malloc(sizeof(int) * (t + 1));
-//
-//     generate_naf(naf, &nlen, exp);
-//
-//     for (i = nlen - 2; i >= 0; i--)
-//     {
-//         element_sqr(c, c);
-//         if (naf[i])
-//         {
-//             if (naf[i] < 0) {
-//                 element_mul(c, c, ix);
-//             }
-//             else {
-//                 element_mul(c, c, x);
-//             }
-//         }
-//     }
-//
-//     element_set(z, c);
-//     element_clear(c);
-//     element_clear(ix);
-//
-//     free(naf);
-// }
+void bls509_fp24_pow_naf(Element z, const Element x, const mpz_t exp)
+{
+    long t, i;
+    Element c, ix;
+
+    int *naf, nlen;
+
+    element_init(c, field(z));
+    element_init(ix, field(z));
+
+    element_set(c, x);
+    element_inv(ix, x);
+
+    t = mpz_sizeinbase(exp, 2);
+
+    naf = (int *)malloc(sizeof(int) * (t + 1));
+
+    generate_naf(naf, &nlen, exp);
+
+    for (i = nlen - 2; i >= 0; i--)
+    {
+        element_sqr(c, c);
+        if (naf[i])
+        {
+            if (naf[i] < 0) {
+                element_mul(c, c, ix);
+            }
+            else {
+                element_mul(c, c, x);
+            }
+        }
+    }
+
+    element_set(z, c);
+    element_clear(c);
+    element_clear(ix);
+
+    free(naf);
+}
 
 //-----------------------------------------------------------
 //  Frobenius Map in Fp12
@@ -965,74 +952,52 @@ void bls509_fp24_pow(Element z, const Element x, const mpz_t exp)
 //-------------------------------------------
 int bls509_fp24_is_zero(const Element x)
 {
-    if (bls509_fp12_is_zero(rep2(x)))
+    if (bls509_fp12_is_zero(rep1(x)))
     {
-      if (bls509_fp12_is_zero(rep1(x)))
-      {
-          if (bls509_fp12_is_zero(rep0(x))) {
-              return TRUE;
-          }
-      }
+        if (bls509_fp12_is_zero(rep0(x))) {
+            return TRUE;
+        }
     }
     return FALSE;
 }
 
 int bls509_fp24_is_one(const Element x)
 {
-    if (bls509_fp12_is_zero(rep2(x)))
+    if (bls509_fp12_is_zero(rep1(x)))
     {
-      if (bls509_fp12_is_zero(rep1(x)))
-      {
-          if (bls509_fp12_is_one(rep0(x))) {
-              return TRUE;
-          }
-      }
+        if (bls509_fp12_is_one(rep0(x))) {
+            return TRUE;
+        }
     }
     return FALSE;
 }
 
 int bls509_fp24_cmp(const Element x, const Element y)
 {
-    if (bls509_fp12_cmp(rep2(x), rep2(y)) == 0)
+    if (bls509_fp12_cmp(rep1(x), rep1(y)) == 0)
     {
-      if (bls509_fp12_cmp(rep1(x), rep1(y)) == 0)
-      {
-          if (bls509_fp12_cmp(rep0(x), rep0(y)) == 0) {
-              return 0;
-          }
-      }
+        if (bls509_fp12_cmp(rep0(x), rep0(y)) == 0) {
+            return 0;
+        }
     }
     return 1;
 }
 
 int bls509_fp24_is_sqr(const Element x)
 {
-    int hr = FALSE;
-
     Element *t = field(x)->base->tmp;
 
     if (element_is_zero(x)) {
         return FALSE;
     }
 
-    //------------------------------------------
-    //  N(x) = x0^3 - beta*x1^3 - (alpha + 1)*x2^3 + 3*beta*x0*x1*x2
-    //------------------------------------------
-    bls509_fp12_add(t[6], t[7], t[7]);    // t6 = 2*x1*x2
-    bls509_fp12_add(t[6], t[6], t[7]);    // t6 = 3*x1*x2
-    bls509_fp12_beta_mul(t[6], t[6]);     // t6 = 3*beta*x1*x2
-    bls509_fp12_add(t[6], t[0], t[6]);    // t6 = x0^2 + 3*beta*x1*x2
-    bls509_fp12_mul(t[0], t[6], rep0(x)); // t0 = x0^3 + 3*beta*x0*x1*x2
-    bls509_fp12_mul(t[1], t[1], rep1(x)); // t1 = x1^3
-    bls509_fp12_beta_mul(t[1], t[1]);     // t1 = beta*x1^3
-    bls509_fp12_mul(t[2], t[2], rep2(x)); // t2 = x2^3
-    bls509_fp12_xi_mul(t[2], t[2]);       // t2 = (alpha + 1)*x2^3
-    bls509_fp12_add(t[6], t[1], t[2]);    // t6 = beta*x1^3 + (alpha + 1)*x2^3
-    bls509_fp12_sub(t[1], t[0], t[6]);    // t1 = x0^3 + 3*beta*x0*x1*x2 - beta*x1^3 - (alpha + 1)*x2^3
+    bls509_fp12_sqr(t[0], rep0(x)); // t0 = x0^2
+    bls509_fp12_sqr(t[1], rep1(x)); // t1 = x1^2
 
-    hr = bls509_fp12_is_sqr(t[1]);
+    bls509_fp12_gamma_mul(t[2], t[1]); // t1 = x1^2*xi
+    bls509_fp12_add(t[0], t[0], t[2]);
 
-    return hr;
+    return bls509_fp12_is_sqr(t[0]);
 }
 
 //-------------------------------------------
@@ -1042,7 +1007,6 @@ void bls509_fp24_random(Element z)
 {
     bls509_fp12_random(rep0(z));
     bls509_fp12_random(rep1(z));
-    bls509_fp12_random(rep2(z));
 }
 
 //-------------------------------------------
@@ -1050,35 +1014,59 @@ void bls509_fp24_random(Element z)
 //-------------------------------------------
 void bls509_fp24_to_mpz(mpz_t a, const Element x)
 {
-    mpz_mul(a, rep(rep1(rep1(rep2(x)))), field(x)->base->base->base->order);   // a = rep121*p
-    mpz_add(a, a, rep(rep0(rep1(rep2(x)))));   // a = a + rep111
-    mpz_mul(a, a, field(x)->base->base->base->order);   //a = a*p
-    mpz_add(a, a, rep(rep1(rep0(rep2(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep0(rep0(rep2(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep1(rep1(rep1(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep0(rep1(rep1(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep1(rep0(rep1(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep0(rep0(rep1(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep1(rep1(rep0(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep0(rep1(rep0(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep1(rep0(rep0(x)))));
-    mpz_mul(a, a, field(x)->base->base->base->order);
-    mpz_add(a, a, rep(rep0(rep0(rep0(x)))));
+    mpz_mul(a, rep(rep1(rep1(rep2(rep1(x))))), field(x)->base->base->base->base->order);   // a = rep121*p
+    mpz_add(a, a, rep(rep0(rep1(rep2(rep1(x))))));   // a = a + rep111
+    mpz_mul(a, a, field(x)->base->base->base->base->order);   //a = a*p
+    mpz_add(a, a, rep(rep1(rep0(rep2(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep2(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep1(rep1(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep1(rep1(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep0(rep1(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep1(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep1(rep0(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep1(rep0(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep0(rep0(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep0(rep1(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep1(rep2(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep1(rep2(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep0(rep2(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep2(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep1(rep1(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep1(rep1(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep0(rep1(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep1(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep1(rep0(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep1(rep0(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep1(rep0(rep0(rep0(x))))));
+    mpz_mul(a, a, field(x)->base->base->base->base->order);
+    mpz_add(a, a, rep(rep0(rep0(rep0(rep0(x))))));
 }
 
 void bls509_fp24_to_oct(unsigned char *os, size_t *size, const Element x)
 {
     size_t s0;
 
-    unsigned char b0[768];
+    unsigned char b0[1536];
     mpz_t z;
 
     mpz_init(z);
@@ -1086,11 +1074,11 @@ void bls509_fp24_to_oct(unsigned char *os, size_t *size, const Element x)
     bls509_fp24_to_mpz(z, x);
     mpz_export(b0, &s0, 1, sizeof(*b0), 1, 0, z);
 
-    memset(os, 0x00, 768);
+    memset(os, 0x00, 1536);
 
-    memcpy(&os[768 - (int)s0], b0, s0);
+    memcpy(&os[1536 - (int)s0], b0, s0);
 
-    (*size) = 768;
+    (*size) = 1536;
 
     mpz_clear(z);
 }
@@ -1099,7 +1087,7 @@ void bls509_fp24_from_oct(Element x, const unsigned char *os, const size_t size)
 {
     mpz_t quo, rem;
 
-    if (size < 768) {
+    if (size < 1536) {
         fprintf(stderr, "error: please set up the enought buffer for element\n");
         exit(300);
     }
@@ -1109,30 +1097,54 @@ void bls509_fp24_from_oct(Element x, const unsigned char *os, const size_t size)
 
     mpz_import(quo, size, 1, sizeof(*os), 1, 0, os);
 
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep0(rep0(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep0(rep0(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep1(rep0(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep1(rep0(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep0(rep1(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep0(rep1(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep1(rep1(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep1(rep1(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep0(rep2(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep0(rep2(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep0(rep1(rep2(x)))), rem);
-    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->order);
-    mpz_set(rep(rep1(rep1(rep2(x)))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep0(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep0(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep0(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep0(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep1(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep1(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep1(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep1(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep2(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep2(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep2(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep2(rep0(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep0(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep0(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep0(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep0(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep1(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep1(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep1(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep1(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep0(rep2(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep0(rep2(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep0(rep1(rep2(rep1(x))))), rem);
+    mpz_tdiv_qr(quo, rem, quo, field(x)->base->base->base->base->order);
+    mpz_set(rep(rep1(rep1(rep2(rep1(x))))), rem);
 
     mpz_clear(quo);
     mpz_clear(rem);

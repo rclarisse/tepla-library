@@ -401,7 +401,7 @@ void ec_bls509_fp12_new(Field f)
     f->mul  = bls509_fp12_mul;
     f->sqr  = bls509_fp12_sqr;
     f->inv  = bls509_fp12_inv;
-    f->pow  = bls509_fp12_pow;//_naf;
+    f->pow  = bls509_fp12_pow_naf;
     f->sqrt = NULL; // bls509_fp12_sqrt;
 
     f->is_zero = bls509_fp12_is_zero;
@@ -465,90 +465,95 @@ void ec_bls509_fp12_new(Field f)
 //----------------------------------------------
 //  function creating field bls509_fp24
 //----------------------------------------------
-// void ec_bls509_fp24_new(Field f)
-// {
-//     int i;
-//
-//     f->type = Field_fpn;
-//
-//     set_field_name(f, "bls509_fp24");
-//
-//     f->ID = bls509_fp24;
-//
-//     f->str_len = 3120;
-//     f->oct_len = 1536;
-//
-//     //------------------------------
-//     //  set pointer of function
-//     //------------------------------
-//     f->init     = bls509_fp24_init;
-//     f->clear    = bls509_fp24_clear;
-//     f->set      = bls509_fp24_set;
-//     f->set_str  = bls509_fp24_set_str;
-//     f->get_str  = bls509_fp24_get_str;
-//     f->set_zero = bls509_fp24_set_zero;
-//     f->set_one  = bls509_fp24_set_one;
-//
-//     f->add  = bls509_fp24_add;
-//     f->sub  = bls509_fp24_sub;
-//     f->neg  = bls509_fp24_neg;
-//     f->mul  = bls509_fp24_mul;
-//     f->sqr  = bls509_fp24_sqr;
-//     f->inv  = bls509_fp24_inv;
-//     f->pow  = bls509_fp24_pow;
-//     f->sqrt = bls509_fp24_sqrt;
-//
-//     f->is_zero = bls509_fp24_is_zero;
-//     f->is_one  = bls509_fp24_is_one;
-//     f->is_sqr  = bls509_fp24_is_sqr;
-//
-//     f->cmp = bls509_fp24_cmp;
-//
-//     f->random = bls509_fp24_random;
-//
-//     f->to_oct   = bls509_fp24_to_oct;
-//     f->from_oct = bls509_fp24_from_oct;
-//
-//     //-----------------------------------------
-//     //  set base field
-//     //-----------------------------------------
-//     f->base = (struct ec_field_st *)malloc(sizeof(struct ec_field_st));
-//     field_init(f->base, "bls509_fp12");
-//
-//     //-----------------------------------------
-//     //  characteristic of prime field
-//     //-----------------------------------------
-//     //    p = (t - 1)^2 * (t^8 - t^4 + 1) / 3 + t
-//     //    t = -1 + 2^11 - 2^28 - 2^51 = -2251800082118657
-//     //-----------------------------------------
-//     mpz_init(f->order);
-//     mpz_mul(f->order, f->base->order, f->base->order);
-//
-//     mpz_init_set_str(f->OP1_1, "0", 16);
-//     mpz_init_set_str(f->OP1_2, "0", 16);
-//     mpz_init_set_str(f->OP2, "0", 16);
-//
-//     //-----------------------------------------
-//     //  irreducible polynomial: y^2 + x
-//     //-----------------------------------------
-//     f->irre_poly_num = 1;
-//     f->irre_poly_deg = 2;
-//
-//     f->irre_poly = (Element *)malloc(sizeof(Element));
-//
-//     element_init(f->irre_poly[0], f->base);
-//     element_set_str(f->irre_poly[0], "0 1");
-//
-//     //----------------------------------
-//     //  temporary element init
-//     //----------------------------------
-//     f->tmp = (Element *)malloc(sizeof(Element) * TMP_NUM);
-//     for (i = 0; i < TMP_NUM; i++) {
-//         element_init(f->tmp[i], f);
-//     }
-//
-//     return;
-// }
+void ec_bls509_fp24_new(Field f)
+{
+    int i;
+
+    f->type = Field_fpn;
+
+    set_field_name(f, "bls509_fp24");
+
+    f->ID = bls509_fp24;
+
+    f->str_len = 3120;
+    f->oct_len = 1536;
+
+    //------------------------------
+    //  set pointer of function
+    //------------------------------
+    f->init     = bls509_fp24_init;
+    f->clear    = bls509_fp24_clear;
+    f->set      = bls509_fp24_set;
+    f->set_str  = bls509_fp24_set_str;
+    f->get_str  = bls509_fp24_get_str;
+    f->set_zero = bls509_fp24_set_zero;
+    f->set_one  = bls509_fp24_set_one;
+
+    f->add  = bls509_fp24_add;
+    f->sub  = bls509_fp24_sub;
+    f->neg  = bls509_fp24_neg;
+    f->mul  = bls509_fp24_mul;
+    f->sqr  = bls509_fp24_sqr;
+    f->inv  = bls509_fp24_inv;
+    f->pow  = bls509_fp24_pow;
+    f->sqrt = NULL;//bls509_fp24_sqrt;
+
+    f->is_zero = bls509_fp24_is_zero;
+    f->is_one  = bls509_fp24_is_one;
+    f->is_sqr  = bls509_fp24_is_sqr;
+
+    f->cmp = bls509_fp24_cmp;
+
+    f->random = bls509_fp24_random;
+
+    f->to_oct   = bls509_fp24_to_oct;
+    f->from_oct = bls509_fp24_from_oct;
+
+    //-----------------------------------------
+    //  set base field
+    //-----------------------------------------
+    f->base = (struct ec_field_st *)malloc(sizeof(struct ec_field_st));
+    field_init(f->base, "bls509_fp12");
+
+    //-----------------------------------------
+    //  characteristic of prime field
+    //-----------------------------------------
+    //    p = (t - 1)^2 * (t^8 - t^4 + 1) / 3 + t
+    //    t = -1 + 2^11 - 2^28 - 2^51 = -2251800082118657
+    //-----------------------------------------
+    mpz_init(f->order);
+    mpz_mul(f->order, f->base->order, f->base->order);
+
+    mpz_init_set_str(f->OP1_1, "0", 16);
+    mpz_init_set_str(f->OP1_2, "0", 16);
+    mpz_init_set_str(f->OP2, "0", 16);
+
+    //-----------------------------------------
+    //  pre-computation for square root
+    //-----------------------------------------
+    f->precomp = NULL;
+    
+    //-----------------------------------------
+    //  irreducible polynomial: w^2 + z
+    //-----------------------------------------
+    f->irre_poly_num = 1;
+    f->irre_poly_deg = 2;
+
+    f->irre_poly = (Element *)malloc(sizeof(Element));
+
+    element_init(f->irre_poly[0], f->base);
+    element_set_str(f->irre_poly[0], "0 0 0 0 1 0 0 0 0 0 0 0");
+
+    //----------------------------------
+    //  temporary element init
+    //----------------------------------
+    f->tmp = (Element *)malloc(sizeof(Element) * TMP_NUM);
+    for (i = 0; i < TMP_NUM; i++) {
+        element_init(f->tmp[i], f);
+    }
+
+    return;
+}
 
 //----------------------------------------------
 //  function generating elliptic curve method

@@ -55,7 +55,6 @@ void test_arithmetic_operation(Field f)
     element_init(h1, f->base->base);
     element_init(h2, f->base->base);
 
-
     //--------------------
     //  add
     //--------------------
@@ -125,15 +124,6 @@ void test_arithmetic_operation(Field f)
     //--------------------
     element_sqr(c, a);
     element_mul(d, a, a);
-
-    // char s[1560];
-    // fprintf(stderr, "\n\n");
-    // element_get_str(s, c);
-    // fprintf(stderr, s);
-    // fprintf(stderr, "\n\n");
-    // element_get_str(s, d);
-    // fprintf(stderr, s);
-    // fprintf(stderr, "\n\n");
 
     assert(element_cmp(c, d) == 0);
 

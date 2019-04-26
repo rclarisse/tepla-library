@@ -413,45 +413,45 @@ void bls509_fp12_pow(Element z, const Element x, const mpz_t exp)
 //-----------------------------------------------------------
 //  exponentiation z = x^exp with NAF
 //-----------------------------------------------------------
-// void bls509_fp12_pow_naf(Element z, const Element x, const mpz_t exp)
-// {
-//     long t, i;
-//     Element c, ix;
-//
-//     int *naf, nlen;
-//
-//     element_init(c, field(z));
-//     element_init(ix, field(z));
-//
-//     element_set(c, x);
-//     element_inv(ix, x);
-//
-//     t = mpz_sizeinbase(exp, 2);
-//
-//     naf = (int *)malloc(sizeof(int) * (t + 1));
-//
-//     generate_naf(naf, &nlen, exp);
-//
-//     for (i = nlen - 2; i >= 0; i--)
-//     {
-//         element_sqr(c, c);
-//         if (naf[i])
-//         {
-//             if (naf[i] < 0) {
-//                 element_mul(c, c, ix);
-//             }
-//             else {
-//                 element_mul(c, c, x);
-//             }
-//         }
-//     }
-//
-//     element_set(z, c);
-//     element_clear(c);
-//     element_clear(ix);
-//
-//     free(naf);
-// }
+void bls509_fp12_pow_naf(Element z, const Element x, const mpz_t exp)
+{
+    long t, i;
+    Element c, ix;
+
+    int *naf, nlen;
+
+    element_init(c, field(z));
+    element_init(ix, field(z));
+
+    element_set(c, x);
+    element_inv(ix, x);
+
+    t = mpz_sizeinbase(exp, 2);
+
+    naf = (int *)malloc(sizeof(int) * (t + 1));
+
+    generate_naf(naf, &nlen, exp);
+
+    for (i = nlen - 2; i >= 0; i--)
+    {
+        element_sqr(c, c);
+        if (naf[i])
+        {
+            if (naf[i] < 0) {
+                element_mul(c, c, ix);
+            }
+            else {
+                element_mul(c, c, x);
+            }
+        }
+    }
+
+    element_set(z, c);
+    element_clear(c);
+    element_clear(ix);
+
+    free(naf);
+}
 
 //-----------------------------------------------------------
 //  Frobenius Map in Fp12
